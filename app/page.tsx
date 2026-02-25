@@ -108,14 +108,14 @@ const features = [
   {
     icon: BrainCircuit,
     title: 'AI Tutor',
-    desc: 'A patient, encouraging AI assistant that knows neuroscience and speaks your language. Ask anything, anytime.',
+    desc: 'A patient, encouraging AI assistant that adapts to your level. It remembers your struggles and explains at your pace.',
     accent: 'text-neuro-500',
     bg: 'bg-neuro-50 dark:bg-neuro-950/30',
   },
   {
     icon: BookOpen,
     title: 'Neuroscience Curriculum',
-    desc: 'From "Hello World" to analyzing meditation EEG data. Every lesson uses examples from brain science.',
+    desc: 'From "Hello World" to analyzing real brain data. Twenty-eight lessons across five phases, all using neuroscience examples.',
     accent: 'text-amber-500',
     bg: 'bg-amber-50 dark:bg-amber-950/30',
   },
@@ -153,9 +153,16 @@ const phases = [
   {
     num: '04',
     title: 'Neuroscience',
-    desc: 'EEG analysis, spike trains, and your own meditation study.',
+    desc: 'EEG analysis, spike trains, statistics, and your own meditation study.',
     color: 'border-rose-400',
     dot: 'bg-rose-400',
+  },
+  {
+    num: '05',
+    title: 'Real Data',
+    desc: 'Work with real spike, EEG, fMRI, and calcium imaging datasets.',
+    color: 'border-violet-400',
+    dot: 'bg-violet-400',
   },
 ]
 
@@ -232,8 +239,8 @@ export default function Home() {
             style={{ animationDelay: '0.4s' }}
           >
             An interactive platform designed for complete beginners. Write code
-            in your browser, learn from an AI tutor, and go from zero to
-            analyzing brain signals — at your own pace.
+            in your browser, learn from an AI tutor that adapts to you, and go
+            from zero to analyzing real brain data — at your own pace.
           </p>
 
           <div
@@ -349,14 +356,14 @@ export default function Home() {
             Your learning path
           </h2>
           <p className="mt-3 text-gray-500 dark:text-gray-400 max-w-lg mx-auto">
-            From your first line of code to analyzing real meditation data. Four
-            phases, twenty lessons, one journey.
+            From your first line of code to analyzing real brain data. Five
+            phases, twenty-eight lessons, one journey.
           </p>
         </div>
 
         <div className="relative max-w-2xl mx-auto">
           {/* Vertical line */}
-          <div className="absolute left-5 top-3 bottom-3 w-px bg-gradient-to-b from-brand-300 via-neuro-300 via-amber-300 to-rose-300 opacity-40" />
+          <div className="absolute left-5 top-3 bottom-3 w-px bg-gradient-to-b from-brand-300 via-neuro-300 via-amber-300 via-rose-300 to-violet-300 opacity-40" />
 
           <div className="space-y-10">
             {phases.map((phase) => (

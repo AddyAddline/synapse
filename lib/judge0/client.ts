@@ -83,6 +83,13 @@ export function wrapCodeForPlot(code: string): string {
 figure("visible", "off");
 ${code}
 print("/tmp/output.png", "-dpng", "-S640,480");
+fid = fopen("/tmp/output.png", "rb");
+raw = fread(fid, Inf, "uint8");
+fclose(fid);
+b64 = base64_encode(raw);
+disp("__PLOT_BASE64_START__");
+disp(b64);
+disp("__PLOT_BASE64_END__");
 `
 }
 

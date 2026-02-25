@@ -60,14 +60,57 @@ When answering, relate your responses to this lesson's topics.`
 }
 
 /**
+ * Build learner context from the adaptive profile and stats.
+ */
+export function buildLearnerContext(
+  profile?: {
+    summary: string
+    comfort_level: string
+  } | null,
+  stats?: {
+    attempted: number
+    passed: number
+    passRate: number
+    recentStruggles: { exerciseId: number; failCount: number }[]
+  } | null
+): string {
+  if (!profile && !stats) return ''
+
+  let context = '\n\n## About this student (from past interactions)\n'
+
+  if (profile) {
+    context += `Comfort level: ${profile.comfort_level}\n`
+    if (profile.summary) {
+      context += `Summary: ${profile.summary}\n`
+    }
+  }
+
+  if (stats && stats.attempted > 0) {
+    context += `\n## Recent exercise performance\n`
+    context += `- ${stats.attempted} attempted, ${stats.passed} passed (${stats.passRate}%)\n`
+    if (stats.recentStruggles.length > 0) {
+      context += `- Struggling with exercises: ${stats.recentStruggles.map((s) => `#${s.exerciseId} (${s.failCount} failed attempts)`).join(', ')}\n`
+    }
+  }
+
+  context += '\nAdapt your explanations accordingly — match their level and address their weak areas.'
+
+  return context
+}
+
+/**
  * Build the full messages array for the tutor.
  */
 export function buildTutorMessages(
   userMessage: string,
   conversationHistory: { role: 'user' | 'assistant'; content: string }[],
-  lesson?: { title: string; phase: number; content_md: string }
+  lesson?: { title: string; phase: number; content_md: string },
+  learnerContext?: string
 ): { role: 'system' | 'user' | 'assistant'; content: string }[] {
-  const systemContent = TUTOR_SYSTEM_PROMPT + buildLessonContext(lesson)
+  const systemContent =
+    TUTOR_SYSTEM_PROMPT +
+    buildLessonContext(lesson) +
+    (learnerContext || '')
 
   const messages: { role: 'system' | 'user' | 'assistant'; content: string }[] = [
     { role: 'system', content: systemContent },

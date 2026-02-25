@@ -1,0 +1,53 @@
+{
+  "phase": 4,
+  "order_num": 7,
+  "title": "Statistics for Neuroscience",
+  "description": "Hypothesis testing, t-tests, p-values, effect sizes, and multiple comparison corrections — the statistical tools every neuroscientist needs.",
+  "difficulty": "advanced",
+  "estimated_minutes": 30,
+  "content_md": "# Statistics for Neuroscience\n\nYou have learned to collect, filter, and visualize brain data. But how do you know if what you see is **real** versus just random noise?\n\nThat is where statistics comes in.\n\n## Why Statistics Matter\n\nImagine you run a meditation study. You measure alpha power (8-13 Hz) in two groups:\n- **Group A:** 10 minutes of meditation\n- **Group B:** 10 minutes of rest\n\nGroup A has slightly higher alpha power. But is the difference real, or could it be due to random variation between people?\n\nStatistics gives you a principled way to answer this question.\n\n## Hypothesis Testing: The Coin Flip Analogy\n\nImagine someone claims a coin is fair. You flip it 100 times and get 60 heads. Is the coin biased?\n\n- **Null hypothesis (H0):** The coin is fair (50/50)\n- **Alternative hypothesis (H1):** The coin is biased\n\nThe **p-value** answers: \"If the coin really were fair, what is the probability of getting 60 or more heads by chance?\"\n\nIf that probability is very low (typically p < 0.05), we reject H0 and conclude the coin is likely biased.\n\n## The t-Test\n\nThe most common test in neuroscience is the **two-sample t-test**. It compares the means of two groups and asks: \"Are these means significantly different?\"\n\nIn Octave:\n```matlab\n[h, p] = t_test_2(group1, group2);\n% h = 1 means reject null hypothesis (significant difference)\n% p = p-value\n```\n\n## Effect Size: Cohen's d\n\nA p-value tells you if a difference is **statistically significant**, but not how **big** it is. Effect size (Cohen's d) measures that:\n\n```matlab\nd = (mean(group1) - mean(group2)) / pooled_std;\n```\n\n| Cohen's d | Interpretation |\n|-----------|----------------|\n| 0.2 | Small effect |\n| 0.5 | Medium effect |\n| 0.8 | Large effect |\n\n## The Multiple Comparisons Problem\n\nIf you test 100 EEG channels for a difference at p < 0.05, you expect ~5 false positives **by pure chance**! This is the multiple comparisons problem.\n\n**Bonferroni correction** is the simplest fix: divide your threshold by the number of tests.\n\n```matlab\nalpha_corrected = 0.05 / num_tests;\n```\n\nLet's apply these tools!",
+  "exercises": [
+    {
+      "order_num": 1,
+      "title": "Two-sample t-test",
+      "prompt": "Simulate a meditation study and run a t-test.\n\n1. Set the random seed: rand('state', 42)\n2. Generate simulated alpha power for two groups (30 subjects each):\n   - meditation group: mean=10.5, std=2.0 → meditation = 10.5 + 2.0 * randn(1, 30)\n   - rest group: mean=9.0, std=2.0 → rest = 9.0 + 2.0 * randn(1, 30)\n3. Compute the t-statistic manually:\n   - t = (mean(meditation) - mean(rest)) / sqrt(var(meditation)/30 + var(rest)/30)\n4. Use Octave's built-in: [h, p] = t_test_2(meditation, rest)\n5. Display:\n   - disp(['Meditation mean: ' num2str(mean(meditation), '%.2f')])\n   - disp(['Rest mean: ' num2str(mean(rest), '%.2f')])\n   - disp(['t-statistic: ' num2str(t, '%.3f')])\n   - disp(['p-value: ' num2str(p, '%.4f')])\n   - disp(['Significant (p<0.05): ' num2str(h)])",
+      "starter_code": "% Two-sample t-test: Meditation vs Rest\nrand('state', 42);\n\n% Generate data\n% YOUR CODE HERE\n\n% Manual t-statistic\n% YOUR CODE HERE\n\n% Built-in t-test\n% YOUR CODE HERE\n\n% Display results\n% YOUR CODE HERE\n",
+      "solution": "rand('state', 42);\n\nmeditation = 10.5 + 2.0 * randn(1, 30);\nrest = 9.0 + 2.0 * randn(1, 30);\n\nt = (mean(meditation) - mean(rest)) / sqrt(var(meditation)/30 + var(rest)/30);\n\n[h, p] = t_test_2(meditation, rest);\n\ndisp(['Meditation mean: ' num2str(mean(meditation), '%.2f')]);\ndisp(['Rest mean: ' num2str(mean(rest), '%.2f')]);\ndisp(['t-statistic: ' num2str(t, '%.3f')]);\ndisp(['p-value: ' num2str(p, '%.4f')]);\ndisp(['Significant (p<0.05): ' num2str(h)]);",
+      "hints": [
+        "randn(1, 30) generates 30 random numbers from a standard normal distribution.",
+        "The t-statistic formula: t = (mean1 - mean2) / sqrt(var1/n1 + var2/n2)",
+        "t_test_2(x, y) is Octave's built-in two-sample t-test. It returns [h, p]."
+      ],
+      "test_cases": [],
+      "requires_plot": false
+    },
+    {
+      "order_num": 2,
+      "title": "Effect size (Cohen's d)",
+      "prompt": "Compute Cohen's d to measure how large the meditation effect is.\n\n1. Set seed: rand('state', 42)\n2. Generate the same data as Exercise 1\n3. Compute the pooled standard deviation:\n   pooled_std = sqrt(((30-1)*var(meditation) + (30-1)*var(rest)) / (30+30-2))\n4. Compute Cohen's d:\n   d = (mean(meditation) - mean(rest)) / pooled_std\n5. Classify the effect:\n   if abs(d) >= 0.8: 'large'\n   elseif abs(d) >= 0.5: 'medium'\n   else: 'small'\n6. Display:\n   - disp(['Cohen''s d: ' num2str(d, '%.3f')])\n   - disp(['Effect size: ' classification])\n   - disp(['Interpretation: The meditation group shows a [size] effect on alpha power'])",
+      "starter_code": "% Effect size: Cohen's d\nrand('state', 42);\n\nmeditation = 10.5 + 2.0 * randn(1, 30);\nrest = 9.0 + 2.0 * randn(1, 30);\n\n% Compute pooled standard deviation\n% YOUR CODE HERE\n\n% Compute Cohen's d\n% YOUR CODE HERE\n\n% Classify effect size\n% YOUR CODE HERE\n\n% Display results\n% YOUR CODE HERE\n",
+      "solution": "rand('state', 42);\n\nmeditation = 10.5 + 2.0 * randn(1, 30);\nrest = 9.0 + 2.0 * randn(1, 30);\n\npooled_std = sqrt(((30-1)*var(meditation) + (30-1)*var(rest)) / (30+30-2));\n\nd = (mean(meditation) - mean(rest)) / pooled_std;\n\nif abs(d) >= 0.8\n  classification = 'large';\nelseif abs(d) >= 0.5\n  classification = 'medium';\nelse\n  classification = 'small';\nend\n\ndisp(['Cohen''s d: ' num2str(d, '%.3f')]);\ndisp(['Effect size: ' classification]);\ndisp(['Interpretation: The meditation group shows a ' classification ' effect on alpha power']);",
+      "hints": [
+        "Pooled std combines the variance from both groups: sqrt(((n1-1)*var1 + (n2-1)*var2) / (n1+n2-2))",
+        "Cohen's d = difference in means / pooled standard deviation",
+        "Use abs(d) for classification since the sign just indicates direction."
+      ],
+      "test_cases": [],
+      "requires_plot": false
+    },
+    {
+      "order_num": 3,
+      "title": "Multiple comparison correction",
+      "prompt": "Demonstrate the multiple comparisons problem and Bonferroni correction.\n\n1. Set seed: rand('state', 42)\n2. Simulate testing 20 EEG channels where there is NO real effect:\n   - For each channel i=1:20: generate two random groups (30 values each from the SAME distribution: randn(1,30))\n   - Run t_test_2 on each pair, store the p-value\n3. Count false positives at p < 0.05 (uncorrected)\n4. Apply Bonferroni correction: corrected_alpha = 0.05 / 20\n5. Count false positives at corrected alpha\n6. Display:\n   - disp(['Tests run: 20'])\n   - disp(['Uncorrected false positives (p<0.05): ' num2str(uncorrected_fp)])\n   - disp(['Bonferroni threshold: ' num2str(corrected_alpha, '%.4f')])\n   - disp(['Corrected false positives: ' num2str(corrected_fp)])\n   - disp(['Expected false positives (by chance): ' num2str(20*0.05)])\n   - Then display each p-value: disp(['Channel ' num2str(i) ': p=' num2str(p, '%.4f') significance_marker])\n     where significance_marker is ' *' if p<0.05 and ' **' if p<corrected_alpha",
+      "starter_code": "% Multiple comparison correction\nrand('state', 42);\n\nnum_tests = 20;\np_values = zeros(1, num_tests);\n\n% Run 20 t-tests on random (no-effect) data\n% YOUR CODE HERE\n\n% Count false positives\ncorrected_alpha = 0.05 / num_tests;\n% YOUR CODE HERE\n\n% Display results\n% YOUR CODE HERE\n",
+      "solution": "rand('state', 42);\n\nnum_tests = 20;\np_values = zeros(1, num_tests);\n\nfor i = 1:num_tests\n  group1 = randn(1, 30);\n  group2 = randn(1, 30);\n  [~, p] = t_test_2(group1, group2);\n  p_values(i) = p;\nend\n\ncorrected_alpha = 0.05 / num_tests;\nuncorrected_fp = sum(p_values < 0.05);\ncorrected_fp = sum(p_values < corrected_alpha);\n\ndisp(['Tests run: 20']);\ndisp(['Uncorrected false positives (p<0.05): ' num2str(uncorrected_fp)]);\ndisp(['Bonferroni threshold: ' num2str(corrected_alpha, '%.4f')]);\ndisp(['Corrected false positives: ' num2str(corrected_fp)]);\ndisp(['Expected false positives (by chance): ' num2str(20*0.05)]);\ndisp('');\ndisp('=== Per-channel results ===');\nfor i = 1:num_tests\n  marker = '';\n  if p_values(i) < corrected_alpha\n    marker = ' **';\n  elseif p_values(i) < 0.05\n    marker = ' *';\n  end\n  disp(['Channel ' num2str(i) ': p=' num2str(p_values(i), '%.4f') marker]);\nend",
+      "hints": [
+        "Both groups come from the SAME distribution (randn), so any significant result is a false positive.",
+        "Bonferroni correction: divide alpha (0.05) by the number of tests (20).",
+        "At p<0.05 with 20 tests, you expect ~1 false positive by chance (5% of 20)."
+      ],
+      "test_cases": [],
+      "requires_plot": false
+    }
+  ]
+}

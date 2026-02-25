@@ -1,0 +1,57 @@
+{
+  "phase": 4,
+  "order_num": 8,
+  "title": "Debugging & Defensive Coding",
+  "description": "Learn to read error messages, debug common mistakes, and write robust code with try/catch and input validation.",
+  "difficulty": "intermediate",
+  "estimated_minutes": 25,
+  "content_md": "# Debugging & Defensive Coding\n\nEvery programmer makes mistakes. The difference between a beginner and an experienced coder is not that experts make fewer errors — it is that they know how to **find and fix them quickly**.\n\nThis lesson teaches you to read error messages, use debugging tools, and write code that handles problems gracefully.\n\n## Reading Error Messages\n\nOctave error messages look scary, but they are actually trying to help you. Here is how to read them:\n\n```\nerror: 'x' undefined\n```\n\nThis means: you used a variable called `x` that does not exist. Maybe you forgot to create it, or you have a typo.\n\n## The 5 Most Common Errors\n\n### 1. Undefined variable\n```matlab\ndisp(x)  % error: 'x' undefined\n```\n**Fix:** Define `x` before using it: `x = 5;`\n\n### 2. Parse error (syntax mistake)\n```matlab\nfor i = 1:10\n  disp(i)\n% error: parse error — missing 'end'\n```\n**Fix:** Every `for`, `if`, `while` needs a matching `end`.\n\n### 3. Nonconformant arguments (size mismatch)\n```matlab\na = [1 2 3];\nb = [1 2];\na + b  % error: nonconformant arguments\n```\n**Fix:** Check sizes with `size(a)` and `size(b)` before operating.\n\n### 4. Index out of bounds\n```matlab\nx = [10 20 30];\nx(5)  % error: index (5): out of bound\n```\n**Fix:** Check `length(x)` before indexing.\n\n### 5. Singular matrix\n```matlab\nA = [1 2; 2 4];  % rows are linearly dependent\ninv(A)  % warning: matrix singular\n```\n**Fix:** Check `det(A)` or `rank(A)` first.\n\n## try/catch: Handling Errors Gracefully\n\nInstead of letting errors crash your program, you can catch them:\n\n```matlab\ntry\n  result = some_risky_operation();\ncatch e\n  disp(['Error: ' e.message]);\n  result = default_value;\nend\n```\n\nThis is essential for:\n- Loading files that might not exist\n- Processing data that might have unexpected formats\n- Running analyses that might fail on some inputs\n\n## Debugging Tools\n\n- `size(x)` — check dimensions\n- `class(x)` — check data type\n- `disp(x)` — print values to inspect\n- `whos` — see all variables and their sizes\n- `isnan(x)` — check for NaN values\n\n## The Golden Rule\n\n**Always inspect your data before processing it.** A quick `size()`, `class()`, and `min()/max()` check can save you hours of debugging.",
+  "exercises": [
+    {
+      "order_num": 1,
+      "title": "Error detective",
+      "prompt": "The code below has a bug that causes a dimension mismatch error. Your job:\n\n1. Run the buggy code (it will error)\n2. Read the error message carefully\n3. Use size() to inspect the variables\n4. Fix the bug so the code runs correctly\n5. Display: disp(['Result: ' num2str(result)])\n\nThe code is supposed to compute the dot product of two vectors.\nHint: The dot product of [1,2,3] and [4,5,6] = 1*4 + 2*5 + 3*6 = 32",
+      "starter_code": "% Bug: dimension mismatch in dot product\na = [1 2 3];       % 1x3 row vector\nb = [4 5 6];       % 1x3 row vector\n\n% This line has a bug — fix it!\nresult = a * b;    % matrix multiply requires compatible dimensions\n\ndisp(['Result: ' num2str(result)]);\n",
+      "solution": "a = [1 2 3];\nb = [4 5 6];\n\n% Fix: transpose b to make it a column vector for dot product\nresult = a * b';  % or use: result = dot(a, b);\n\ndisp(['Result: ' num2str(result)]);",
+      "hints": [
+        "Matrix multiplication (a * b) requires the inner dimensions to match: (1×3) * (3×1) works, but (1×3) * (1×3) does not.",
+        "To fix this, you can transpose b with b' to turn it from 1×3 to 3×1.",
+        "Or use the built-in dot(a, b) function which handles this automatically."
+      ],
+      "test_cases": [
+        {
+          "expected_output": "Result: 32\n"
+        }
+      ],
+      "requires_plot": false
+    },
+    {
+      "order_num": 2,
+      "title": "Try/catch for safe file loading",
+      "prompt": "Write a function that safely loads a file using try/catch.\n\n1. Create a function called safe_load that:\n   - Takes a filename as input\n   - Tries to load it with load()\n   - If it succeeds, returns the data and displays 'Loaded [filename] successfully'\n   - If it fails, displays 'Warning: Could not load [filename] — [error message]' and returns an empty struct\n2. Test it with a file that does not exist: safe_load('nonexistent_file.mat')\n3. Display: disp(['Result is empty: ' num2str(isempty(fieldnames(result)))])\n4. Then test with a valid approach: create some data, save it, and load it:\n   - test_value = 42; save('/tmp/test_data.mat', 'test_value');\n   - result2 = safe_load('/tmp/test_data.mat')\n   - disp(['Loaded value: ' num2str(result2.test_value)])",
+      "starter_code": "% Safe file loading with try/catch\n\n% Define the safe_load function\n% YOUR CODE HERE\n\n% Test 1: file that doesn't exist\n% YOUR CODE HERE\n\n% Test 2: file that does exist\n% YOUR CODE HERE\n",
+      "solution": "function data = safe_load(filename)\n  try\n    data = load(filename);\n    disp(['Loaded ' filename ' successfully']);\n  catch e\n    disp(['Warning: Could not load ' filename ' - ' e.message]);\n    data = struct();\n  end\nend\n\nresult = safe_load('nonexistent_file.mat');\ndisp(['Result is empty: ' num2str(isempty(fieldnames(result)))]);\n\ntest_value = 42;\nsave('/tmp/test_data.mat', 'test_value');\nresult2 = safe_load('/tmp/test_data.mat');\ndisp(['Loaded value: ' num2str(result2.test_value)]);",
+      "hints": [
+        "The try/catch syntax: try ... catch e ... end. The variable e contains the error info.",
+        "e.message gives you the error message text.",
+        "Return struct() as an empty struct when loading fails."
+      ],
+      "test_cases": [],
+      "requires_plot": false
+    },
+    {
+      "order_num": 3,
+      "title": "Defensive input validation",
+      "prompt": "Write a function that validates inputs before computing.\n\n1. Create a function called safe_mean_signal that:\n   - Takes one input: signal\n   - Checks if input is numeric: if not, display error and return NaN\n   - Checks if input is a vector (1D): if size has more than 1 non-singleton dimension, display error and return NaN\n   - Checks for NaN values: if any, display a warning with count and remove them\n   - Checks if signal is empty after NaN removal: if so, display error and return NaN\n   - Returns the mean of the cleaned signal\n2. Test with these cases:\n   - safe_mean_signal([1 2 3 4 5]) → should work normally\n   - safe_mean_signal('hello') → should catch non-numeric\n   - safe_mean_signal([1 NaN 3 NaN 5]) → should warn about NaNs, return mean of [1 3 5]\n   - safe_mean_signal([]) → should catch empty\n3. For each test, display: disp(['Test N result: ' num2str(result)])",
+      "starter_code": "% Defensive input validation\n\n% Define safe_mean_signal function\n% YOUR CODE HERE\n\n% Test cases\ndisp('=== Test 1: Normal vector ===');\n% YOUR CODE HERE\n\ndisp('=== Test 2: Non-numeric input ===');\n% YOUR CODE HERE\n\ndisp('=== Test 3: Vector with NaNs ===');\n% YOUR CODE HERE\n\ndisp('=== Test 4: Empty input ===');\n% YOUR CODE HERE\n",
+      "solution": "function result = safe_mean_signal(signal)\n  % Check if numeric\n  if ~isnumeric(signal)\n    disp('Error: Input must be numeric');\n    result = NaN;\n    return;\n  end\n\n  % Check if vector\n  if ~isvector(signal) && ~isempty(signal)\n    disp('Error: Input must be a vector (1D)');\n    result = NaN;\n    return;\n  end\n\n  % Check for empty\n  if isempty(signal)\n    disp('Error: Input is empty');\n    result = NaN;\n    return;\n  end\n\n  % Check for NaNs\n  nan_count = sum(isnan(signal));\n  if nan_count > 0\n    disp(['Warning: Found ' num2str(nan_count) ' NaN values, removing them']);\n    signal = signal(~isnan(signal));\n  end\n\n  % Check if empty after NaN removal\n  if isempty(signal)\n    disp('Error: Signal is empty after removing NaNs');\n    result = NaN;\n    return;\n  end\n\n  result = mean(signal);\nend\n\ndisp('=== Test 1: Normal vector ===');\nr1 = safe_mean_signal([1 2 3 4 5]);\ndisp(['Test 1 result: ' num2str(r1)]);\n\ndisp('=== Test 2: Non-numeric input ===');\nr2 = safe_mean_signal('hello');\ndisp(['Test 2 result: ' num2str(r2)]);\n\ndisp('=== Test 3: Vector with NaNs ===');\nr3 = safe_mean_signal([1 NaN 3 NaN 5]);\ndisp(['Test 3 result: ' num2str(r3)]);\n\ndisp('=== Test 4: Empty input ===');\nr4 = safe_mean_signal([]);\ndisp(['Test 4 result: ' num2str(r4)]);",
+      "hints": [
+        "Use isnumeric(x) to check if input is numeric, isvector(x) to check if it's 1D.",
+        "sum(isnan(signal)) counts the NaN values. signal(~isnan(signal)) removes them.",
+        "Use 'return' to exit the function early when validation fails."
+      ],
+      "test_cases": [],
+      "requires_plot": false
+    }
+  ]
+}

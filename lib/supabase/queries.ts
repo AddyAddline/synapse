@@ -224,3 +224,82 @@ export async function updateProfile(
   if (error) throw error
   return data
 }
+
+// ============================================
+// Learner Profiles
+// ============================================
+
+export async function getLearnerProfile(
+  supabase: SupabaseClient,
+  userId: string
+) {
+  const { data, error } = await supabase
+    .from('learner_profiles')
+    .select('summary, comfort_level, exercises_attempted, exercises_passed, updated_at')
+    .eq('user_id', userId)
+    .single()
+
+  if (error && error.code !== 'PGRST116') throw error
+  return data
+}
+
+export async function upsertLearnerProfile(
+  supabase: SupabaseClient,
+  userId: string,
+  updates: {
+    summary?: string
+    comfort_level?: string
+    exercises_attempted?: number
+    exercises_passed?: number
+  }
+) {
+  const { data, error } = await supabase
+    .from('learner_profiles')
+    .upsert(
+      {
+        user_id: userId,
+        ...updates,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: 'user_id' }
+    )
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function getLearnerStats(
+  supabase: SupabaseClient,
+  userId: string
+) {
+  // Get all attempts
+  const { data: attempts, error } = await supabase
+    .from('user_attempts')
+    .select('exercise_id, correct, attempted_at')
+    .eq('user_id', userId)
+
+  if (error) throw error
+
+  const attempted = new Set(attempts?.map((a) => a.exercise_id) || []).size
+  const passed = new Set(
+    attempts?.filter((a) => a.correct).map((a) => a.exercise_id) || []
+  ).size
+  const passRate = attempted > 0 ? Math.round((passed / attempted) * 100) : 0
+
+  // Find exercises with 3+ failed attempts (recent struggles)
+  const failCounts = new Map<number, number>()
+  for (const a of attempts || []) {
+    if (!a.correct) {
+      failCounts.set(a.exercise_id, (failCounts.get(a.exercise_id) || 0) + 1)
+    }
+  }
+  const recentStruggles = Array.from(failCounts.entries())
+    .filter(([, count]) => count >= 3)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([exerciseId, failCount]) => ({ exerciseId, failCount }))
+
+  return { attempted, passed, passRate, recentStruggles }
+}

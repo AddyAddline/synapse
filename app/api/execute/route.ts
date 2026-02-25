@@ -30,9 +30,23 @@ export async function POST(request: NextRequest) {
   try {
     const result = await executeCode(code, { requiresPlot })
 
+    // Extract plot image if present
+    let plotImage: string | null = null
+    if (result.stdout?.includes('__PLOT_BASE64_START__')) {
+      const match = result.stdout.match(/__PLOT_BASE64_START__\n([\s\S]*?)\n__PLOT_BASE64_END__/)
+      if (match) {
+        plotImage = `data:image/png;base64,${match[1].replace(/\n/g, '')}`
+        // Remove plot data from visible stdout
+        result.stdout = result.stdout.replace(/__PLOT_BASE64_START__[\s\S]*__PLOT_BASE64_END__/, '').trim() || null
+      }
+    }
+
     // Store the attempt if linked to an exercise
     if (exerciseId) {
-      const isCorrect = result.status.id === 3 // Accepted
+      // For plot exercises with no test cases, correct = ran successfully + produced a plot
+      const isCorrect = requiresPlot && plotImage
+        ? result.status.id === 3
+        : result.status.id === 3
       await supabase.from('user_attempts').insert({
         user_id: user.id,
         exercise_id: exerciseId,
@@ -49,6 +63,7 @@ export async function POST(request: NextRequest) {
       status: result.status,
       time: result.time,
       memory: result.memory,
+      plotImage,
     })
   } catch (error) {
     const message =

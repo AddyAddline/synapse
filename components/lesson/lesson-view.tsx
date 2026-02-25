@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { LessonContent } from './lesson-content'
 import { ExerciseCard } from './exercise-card'
 import { TutorChat } from '@/components/chat/tutor-chat'
 import { LessonNav } from './lesson-nav'
+import { LessonComplete } from './lesson-complete'
 import { MessageCircle, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -39,6 +40,35 @@ export function LessonView({
   userId: string
 }) {
   const [chatOpen, setChatOpen] = useState(false)
+  const [completedExercises, setCompletedExercises] = useState<Set<number>>(new Set())
+  const [lessonMarkedComplete, setLessonMarkedComplete] = useState(false)
+
+  const allExercisesDone = exercises.length > 0 && completedExercises.size === exercises.length
+
+  const handleExerciseCorrect = useCallback((exerciseId: number) => {
+    setCompletedExercises((prev) => {
+      const next = new Set(prev)
+      next.add(exerciseId)
+
+      // When all exercises are done, mark lesson as complete
+      if (next.size === exercises.length && !lessonMarkedComplete) {
+        setLessonMarkedComplete(true)
+        fetch('/api/progress', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            lessonId: lesson.id,
+            completed: true,
+            score: 100,
+          }),
+        }).catch(() => {
+          // Silently fail — progress will be retried next time
+        })
+      }
+
+      return next
+    })
+  }, [exercises.length, lesson.id, lessonMarkedComplete])
 
   return (
     <div className="flex h-[calc(100vh-3.5rem)]">
@@ -63,15 +93,28 @@ export function LessonView({
             <div className="mt-12">
               <h2 className="text-lg font-semibold mb-4">Exercises</h2>
               <div className="space-y-6">
-                {exercises.map((ex) => (
+                {exercises.map((ex, i) => (
                   <ExerciseCard
                     key={ex.id}
                     exercise={ex}
                     lessonId={lesson.id}
+                    exerciseIndex={i}
+                    isLastExercise={i === exercises.length - 1}
+                    allExercisesDone={allExercisesDone}
+                    onCorrect={handleExerciseCorrect}
                   />
                 ))}
               </div>
             </div>
+          )}
+
+          {/* Lesson complete banner */}
+          {allExercisesDone && (
+            <LessonComplete
+              lessonTitle={lesson.title}
+              exerciseCount={exercises.length}
+              currentLessonId={lesson.id}
+            />
           )}
 
           {/* Navigation */}

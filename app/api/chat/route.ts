@@ -1,7 +1,8 @@
 import { NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { streamChat } from '@/lib/openrouter/client'
-import { buildTutorMessages } from '@/lib/prompts'
+import { buildTutorMessages, buildLearnerContext } from '@/lib/prompts'
+import { getLearnerProfile, getLearnerStats } from '@/lib/supabase/queries'
 
 export async function POST(request: NextRequest) {
   // Verify authentication
@@ -54,8 +55,20 @@ export async function POST(request: NextRequest) {
     }
   }
 
+  // Fetch learner profile + stats for adaptive context
+  let learnerContext = ''
+  try {
+    const [profile, stats] = await Promise.all([
+      getLearnerProfile(supabase, user.id),
+      getLearnerStats(supabase, user.id),
+    ])
+    learnerContext = buildLearnerContext(profile, stats)
+  } catch {
+    // Learner profile not available — proceed without it
+  }
+
   // Build messages and stream response
-  const messages = buildTutorMessages(message, conversationHistory, lesson)
+  const messages = buildTutorMessages(message, conversationHistory, lesson, learnerContext)
 
   try {
     const stream = await streamChat(messages)

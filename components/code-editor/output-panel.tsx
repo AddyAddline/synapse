@@ -2,6 +2,22 @@
 
 import { cn } from '@/lib/utils'
 import { CheckCircle2, XCircle, Loader2, Terminal } from 'lucide-react'
+import { PlotViewer } from './plot-viewer'
+import { friendlyError } from '@/lib/errors/octave-errors'
+
+const SUCCESS_MESSAGES = [
+  'You got it!',
+  'Nice work!',
+  'Brilliant!',
+  'Nailed it!',
+  'Correct!',
+  'Well done!',
+]
+
+function getSuccessMessage(exerciseIndex?: number): string {
+  const idx = (exerciseIndex ?? Math.floor(Math.random() * SUCCESS_MESSAGES.length)) % SUCCESS_MESSAGES.length
+  return SUCCESS_MESSAGES[idx]
+}
 
 interface OutputPanelProps {
   stdout: string | null
@@ -10,6 +26,10 @@ interface OutputPanelProps {
   isRunning: boolean
   isCorrect?: boolean | null
   time?: string | null
+  plotImage?: string | null
+  isLastExercise?: boolean
+  allExercisesDone?: boolean
+  exerciseIndex?: number
 }
 
 export function OutputPanel({
@@ -19,8 +39,12 @@ export function OutputPanel({
   isRunning,
   isCorrect,
   time,
+  plotImage,
+  isLastExercise,
+  allExercisesDone,
+  exerciseIndex,
 }: OutputPanelProps) {
-  const hasOutput = stdout || stderr || compileOutput
+  const hasOutput = stdout || stderr || compileOutput || plotImage
   const hasError = stderr || compileOutput
 
   if (isRunning) {
@@ -45,6 +69,10 @@ export function OutputPanel({
     )
   }
 
+  // Build friendly error hint
+  const errorText = stderr || compileOutput || ''
+  const friendlyHint = errorText ? friendlyError(errorText) : null
+
   return (
     <div
       className={cn(
@@ -61,10 +89,17 @@ export function OutputPanel({
         <div className="flex items-center gap-2 mb-3">
           {isCorrect ? (
             <>
-              <CheckCircle2 className="w-4 h-4 text-neuro-500" />
-              <span className="text-sm font-medium text-neuro-700 dark:text-neuro-400">
-                Correct!
-              </span>
+              <CheckCircle2 className="w-5 h-5 text-neuro-500 animate-[pulse_0.5s_ease-in-out]" />
+              <div>
+                <span className="text-sm font-semibold text-neuro-700 dark:text-neuro-400">
+                  {getSuccessMessage(exerciseIndex)}
+                </span>
+                {isLastExercise && allExercisesDone && (
+                  <span className="ml-2 text-xs text-neuro-600 dark:text-neuro-500">
+                    Lesson complete! Ready for the next one?
+                  </span>
+                )}
+              </div>
             </>
           ) : (
             <>
@@ -82,6 +117,13 @@ export function OutputPanel({
         </div>
       )}
 
+      {/* Plot */}
+      {plotImage && (
+        <div className="mb-3">
+          <PlotViewer src={plotImage} />
+        </div>
+      )}
+
       {/* Output */}
       <pre className="font-mono text-sm whitespace-pre-wrap leading-relaxed">
         {compileOutput && (
@@ -96,6 +138,15 @@ export function OutputPanel({
           <span className="text-gray-800 dark:text-gray-200">{stdout}</span>
         )}
       </pre>
+
+      {/* Friendly error hint */}
+      {friendlyHint && friendlyHint !== errorText && (
+        <div className="mt-3 pt-3 border-t border-red-200/60 dark:border-red-800/40">
+          <p className="text-sm text-amber-700 dark:text-amber-400 leading-relaxed">
+            <span className="font-medium">Hint:</span> {friendlyHint}
+          </p>
+        </div>
+      )}
     </div>
   )
 }

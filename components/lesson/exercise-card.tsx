@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { CodeEditor } from '@/components/code-editor/editor'
 import { OutputPanel } from '@/components/code-editor/output-panel'
 import { Play, Lightbulb, RotateCcw } from 'lucide-react'
@@ -20,9 +20,17 @@ interface Exercise {
 export function ExerciseCard({
   exercise,
   lessonId,
+  exerciseIndex,
+  isLastExercise,
+  allExercisesDone,
+  onCorrect,
 }: {
   exercise: Exercise
   lessonId: number
+  exerciseIndex: number
+  isLastExercise: boolean
+  allExercisesDone: boolean
+  onCorrect?: (exerciseId: number) => void
 }) {
   const [code, setCode] = useState(exercise.starter_code)
   const [output, setOutput] = useState<{
@@ -30,11 +38,19 @@ export function ExerciseCard({
     stderr: string | null
     compile_output: string | null
     time: string | null
+    plotImage?: string | null
   } | null>(null)
   const [isRunning, setIsRunning] = useState(false)
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null)
   const [hintLevel, setHintLevel] = useState(-1)
   const [currentHint, setCurrentHint] = useState<string | null>(null)
+
+  // Notify parent when exercise is solved
+  useEffect(() => {
+    if (isCorrect === true && onCorrect) {
+      onCorrect(exercise.id)
+    }
+  }, [isCorrect, exercise.id, onCorrect])
 
   const handleRun = useCallback(async () => {
     setIsRunning(true)
@@ -59,6 +75,7 @@ export function ExerciseCard({
           stderr: data.error,
           compile_output: null,
           time: null,
+          plotImage: null,
         })
         setIsCorrect(false)
       } else {
@@ -67,15 +84,17 @@ export function ExerciseCard({
           stderr: data.stderr,
           compile_output: data.compile_output,
           time: data.time,
+          plotImage: data.plotImage,
         })
 
         // Check correctness against test cases
         if (exercise.test_cases.length > 0 && data.stdout) {
           const expected = exercise.test_cases[0].expected_output
           const actual = data.stdout
-          setIsCorrect(
-            actual.trim() === expected.trim()
-          )
+          setIsCorrect(actual.trim() === expected.trim())
+        } else if (exercise.requires_plot && data.plotImage && data.status?.id === 3) {
+          // Plot exercise: correct if it ran and produced a plot
+          setIsCorrect(true)
         } else if (data.status?.id === 3) {
           setIsCorrect(true)
         } else if (data.stderr || data.compile_output) {
@@ -88,6 +107,7 @@ export function ExerciseCard({
         stderr: 'Failed to connect to code execution service',
         compile_output: null,
         time: null,
+        plotImage: null,
       })
       setIsCorrect(false)
     }
@@ -120,6 +140,9 @@ export function ExerciseCard({
             Ex {exercise.order_num}
           </span>
           <h3 className="text-sm font-semibold">{exercise.title}</h3>
+          {isCorrect === true && (
+            <span className="text-xs text-neuro-600 dark:text-neuro-400 font-medium">Solved</span>
+          )}
         </div>
         <div className="flex items-center gap-1">
           {exercise.hints.length > 0 && (
@@ -202,6 +225,10 @@ export function ExerciseCard({
             isRunning={isRunning}
             isCorrect={isCorrect}
             time={output?.time}
+            plotImage={output?.plotImage}
+            isLastExercise={isLastExercise}
+            allExercisesDone={allExercisesDone}
+            exerciseIndex={exerciseIndex}
           />
         </div>
       </div>

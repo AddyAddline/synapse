@@ -8,9 +8,11 @@ import {
   Clock,
   TrendingUp,
   Brain,
+  BrainCircuit,
 } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
+import { useEffect, useState } from 'react'
 
 const PHASE_LABELS: Record<number, { label: string; color: 'brand' | 'neuro' | 'amber' }> = {
   1: { label: 'Fundamentals', color: 'brand' },
@@ -42,6 +44,81 @@ interface Profile {
   display_name: string | null
   current_phase: number
   current_lesson: number
+}
+
+interface LearnerProfile {
+  summary: string
+  comfort_level: string
+  exercises_attempted: number
+  exercises_passed: number
+}
+
+interface LearnerStats {
+  attempted: number
+  passed: number
+  passRate: number
+  recentStruggles: { exerciseId: number; failCount: number }[]
+}
+
+function TutorKnowsCard() {
+  const [profile, setProfile] = useState<LearnerProfile | null>(null)
+  const [stats, setStats] = useState<LearnerStats | null>(null)
+
+  useEffect(() => {
+    fetch('/api/learner-profile')
+      .then((r) => r.json())
+      .then((data) => {
+        setProfile(data.profile)
+        setStats(data.stats)
+      })
+      .catch(() => {
+        // Silently fail
+      })
+  }, [])
+
+  if (!profile || !stats || (stats.attempted === 0 && !profile.summary)) {
+    return null
+  }
+
+  const comfortLabels: Record<string, string> = {
+    beginner: 'Beginner',
+    growing: 'Growing',
+    comfortable: 'Comfortable',
+  }
+
+  return (
+    <Card className="mb-8 border-brand-200/50 dark:border-brand-800/30">
+      <CardHeader>
+        <div className="flex items-center gap-2">
+          <BrainCircuit className="w-4 h-4 text-brand-500" />
+          <h2 className="text-sm font-semibold">Your Tutor Knows</h2>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <div className="flex items-center gap-4 text-sm">
+          <div>
+            <span className="text-gray-500">Level: </span>
+            <span className="font-medium">
+              {comfortLabels[profile.comfort_level] || 'Beginner'}
+            </span>
+          </div>
+          {stats.attempted > 0 && (
+            <div>
+              <span className="text-gray-500">Pass rate: </span>
+              <span className="font-medium">{stats.passRate}%</span>
+            </div>
+          )}
+        </div>
+        {profile.summary && (
+          <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+            {profile.summary.length > 200
+              ? profile.summary.slice(0, 200) + '...'
+              : profile.summary}
+          </p>
+        )}
+      </CardContent>
+    </Card>
+  )
 }
 
 export function DashboardView({
@@ -132,6 +209,9 @@ export function DashboardView({
           </CardContent>
         </Card>
       </div>
+
+      {/* Tutor Knows card */}
+      <TutorKnowsCard />
 
       {/* Continue learning card */}
       {nextLesson && (

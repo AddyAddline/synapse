@@ -1,9 +1,12 @@
 import OpenAI from 'openai'
 
-// Free models available on OpenRouter (rate limited: 20 req/min, 200 req/day)
-export const FREE_MODEL = 'deepseek/deepseek-chat:free'
-// Paid model for complex queries (cheap and capable)
-export const PAID_MODEL = 'deepseek/deepseek-chat'
+// Default: GPT-5.2 via OpenRouter
+const DEFAULT_MODEL = 'openai/gpt-5.2-chat'
+// Free fallback models (when USE_FREE_TUTOR=true or on paid model failure)
+const FREE_MODEL = 'deepseek/deepseek-chat:free'
+
+// Env var: set USE_FREE_TUTOR=true to use free models instead of GPT-5.2
+const useFreeModels = process.env.USE_FREE_TUTOR === 'true'
 
 export function createOpenRouterClient() {
   const apiKey = process.env.OPENROUTER_API_KEY
@@ -27,39 +30,36 @@ export interface TutorMessage {
 }
 
 /**
- * Select the appropriate model based on query complexity.
- * Simple questions use the free model; complex ones use paid.
- */
-export function selectModel(message: string): string {
-  // Use paid model for code review, debugging, and complex explanations
-  const complexPatterns = [
-    /review\s+(my|this)\s+code/i,
-    /debug/i,
-    /what('s|\s+is)\s+wrong/i,
-    /explain\s+(how|why|the\s+difference)/i,
-    /step\s+by\s+step/i,
-    /compare/i,
-  ]
-
-  const isComplex = complexPatterns.some((p) => p.test(message))
-  return isComplex ? PAID_MODEL : FREE_MODEL
-}
-
-/**
  * Stream a chat completion from OpenRouter.
+ * Defaults to GPT-5.2 with automatic fallback to free model on failure.
  */
 export async function streamChat(
   messages: TutorMessage[],
   model?: string
 ) {
   const client = createOpenRouterClient()
-  const selectedModel = model || selectModel(messages[messages.length - 1]?.content || '')
+  const primaryModel = model || (useFreeModels ? FREE_MODEL : DEFAULT_MODEL)
 
-  return client.chat.completions.create({
-    model: selectedModel,
-    messages,
-    stream: true,
-    temperature: 0.7,
-    max_tokens: 2000,
-  })
+  try {
+    return await client.chat.completions.create({
+      model: primaryModel,
+      messages,
+      stream: true,
+      temperature: 0.7,
+      max_tokens: 2000,
+    })
+  } catch (error) {
+    // Fallback to free model if paid model fails
+    if (primaryModel !== FREE_MODEL) {
+      console.warn(`Model ${primaryModel} failed, falling back to ${FREE_MODEL}:`, error)
+      return client.chat.completions.create({
+        model: FREE_MODEL,
+        messages,
+        stream: true,
+        temperature: 0.7,
+        max_tokens: 2000,
+      })
+    }
+    throw error
+  }
 }
