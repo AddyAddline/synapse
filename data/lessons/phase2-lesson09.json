@@ -1,0 +1,53 @@
+{
+  "phase": 2,
+  "order_num": 3,
+  "title": "Advanced Plotting",
+  "description": "Create heatmaps, bar charts, and multi-panel figures — the visualizations neuroscientists use every day.",
+  "difficulty": "intermediate",
+  "estimated_minutes": 35,
+  "content_md": "# Advanced Plotting\n\nIn Phase 1, you learned basic line plots. Now we'll explore the visualizations that neuroscientists rely on daily: **heatmaps** for brain activity maps, **bar charts** for comparing conditions, and **multi-panel figures** for presenting multiple results at once.\n\n## Heatmaps with `imagesc`\n\nA heatmap shows a matrix as a grid of colors. Higher values get warmer colors, lower values get cooler colors. This is how neuroscientists visualize EEG data across channels and time.\n\n```matlab\n% 4 channels x 8 time points\neeg = [1.2 3.4 2.1 5.6 4.3 2.8 1.9 3.7;\n       0.8 2.9 1.7 4.2 3.8 2.1 1.4 3.2;\n       1.5 3.8 2.4 6.1 4.7 3.1 2.2 4.0;\n       0.9 3.1 1.9 5.0 4.0 2.5 1.7 3.5];\n\nfigure;\nimagesc(eeg);\ncolorbar;\nxlabel('Time Point');\nylabel('Channel');\ntitle('EEG Activity Heatmap');\n```\n\nThe `colorbar` adds a legend showing what the colors mean.\n\n## Colormaps\n\nYou can change the color scheme:\n\n```matlab\ncolormap('hot');     % Black-red-yellow-white\ncolormap('jet');     % Blue-cyan-green-yellow-red\ncolormap('parula');  % Default blue-to-yellow\ncolormap('gray');    % Grayscale\n```\n\nFor brain data, `jet` and `hot` are commonly used because they make activation patterns easy to see.\n\n## Bar Charts\n\nBar charts are perfect for comparing averages across conditions:\n\n```matlab\n% Average power in 4 frequency bands\nbands = [8.2 15.6 4.3 2.1];\n\nfigure;\nbar(bands);\nset(gca, 'XTickLabel', {'Delta', 'Alpha', 'Beta', 'Gamma'});\nylabel('Power (uV^2)');\ntitle('EEG Power by Frequency Band');\n```\n\n### Grouped Bar Charts\n\nCompare multiple conditions side by side:\n\n```matlab\n% 2 conditions x 4 frequency bands\npower_data = [8.2 15.6 4.3 2.1;\n              6.5 22.3 5.1 2.8];\n\nfigure;\nbar(power_data');\nlegend('Rest', 'Task');\nset(gca, 'XTickLabel', {'Delta', 'Alpha', 'Beta', 'Gamma'});\n```\n\n## Multi-Panel Figures with `subplot`\n\nPut multiple plots in one figure using `subplot(rows, cols, position)`:\n\n```matlab\nfigure;\n\n% Top-left panel\nsubplot(2, 2, 1);\nplot(signal_1);\ntitle('Channel 1');\n\n% Top-right panel\nsubplot(2, 2, 2);\nplot(signal_2);\ntitle('Channel 2');\n\n% Bottom-left panel\nsubplot(2, 2, 3);\nbar(averages);\ntitle('Averages');\n\n% Bottom-right panel\nsubplot(2, 2, 4);\nimagesc(matrix);\ntitle('Heatmap');\n```\n\nThe three numbers mean: (total rows, total columns, which panel). Panels are numbered left-to-right, top-to-bottom.\n\n## Customizing Your Plots\n\nMake your figures publication-ready:\n\n```matlab\n% Font sizes\nset(gca, 'FontSize', 12);\n\n% Axis limits\nxlim([0 100]);\nylim([-5 5]);\n\n% Color of bars\nbar(data, 'FaceColor', [0.3 0.6 0.9]);  % RGB color\n\n% Grid lines\ngrid on;\n```\n\n## Why This Matters\n\nThese visualizations are the bread and butter of neuroscience papers. A well-made heatmap can show brain activation patterns at a glance. Bar charts let you compare experimental conditions clearly. Multi-panel figures tell a complete story in one image.",
+  "exercises": [
+    {
+      "order_num": 1,
+      "title": "EEG activity heatmap",
+      "prompt": "Create a heatmap showing EEG activity across channels and time.\n\n1. Create a 5x8 matrix `eeg_data` representing 5 channels and 8 time points:\n   [2.1 4.5 3.2 6.8 5.1 3.9 2.5 4.2;\n    1.8 3.9 2.8 5.5 4.3 3.2 2.1 3.8;\n    3.2 5.8 4.5 8.1 6.3 4.8 3.5 5.5;\n    2.5 4.8 3.6 7.0 5.5 4.1 2.8 4.6;\n    1.5 3.5 2.5 5.0 3.9 2.9 1.9 3.4]\n2. Create a figure and display the matrix as a heatmap using `imagesc`\n3. Add a colorbar\n4. Label the x-axis as 'Time Point', y-axis as 'Channel'\n5. Add the title 'EEG Channel Activity Over Time'\n6. Use the 'jet' colormap",
+      "starter_code": "% Create the EEG data matrix\neeg_data = [2.1 4.5 3.2 6.8 5.1 3.9 2.5 4.2;\n            1.8 3.9 2.8 5.5 4.3 3.2 2.1 3.8;\n            3.2 5.8 4.5 8.1 6.3 4.8 3.5 5.5;\n            2.5 4.8 3.6 7.0 5.5 4.1 2.8 4.6;\n            1.5 3.5 2.5 5.0 3.9 2.9 1.9 3.4];\n\n% Create the heatmap\n",
+      "solution": "eeg_data = [2.1 4.5 3.2 6.8 5.1 3.9 2.5 4.2;\n            1.8 3.9 2.8 5.5 4.3 3.2 2.1 3.8;\n            3.2 5.8 4.5 8.1 6.3 4.8 3.5 5.5;\n            2.5 4.8 3.6 7.0 5.5 4.1 2.8 4.6;\n            1.5 3.5 2.5 5.0 3.9 2.9 1.9 3.4];\nfigure;\nimagesc(eeg_data);\ncolorbar;\nxlabel('Time Point');\nylabel('Channel');\ntitle('EEG Channel Activity Over Time');\ncolormap('jet');",
+      "hints": [
+        "imagesc(matrix) displays the matrix as a color-coded image. Call figure; first to create a new figure window",
+        "After imagesc, add colorbar; on a new line, then use xlabel(), ylabel(), and title() for labels",
+        "Set the colormap with colormap('jet') — this gives the classic rainbow color scheme used in neuroscience"
+      ],
+      "test_cases": [],
+      "requires_plot": true
+    },
+    {
+      "order_num": 2,
+      "title": "Frequency band power bar chart",
+      "prompt": "Create a bar chart showing the average power in different EEG frequency bands.\n\n1. Define the average power values for 5 frequency bands:\n   `power = [18.5 12.3 25.7 8.4 3.2]`\n   These correspond to: Delta (1-4 Hz), Theta (4-8 Hz), Alpha (8-13 Hz), Beta (13-30 Hz), Gamma (30-100 Hz)\n2. Create a figure and a bar chart of the power values\n3. Set the x-axis tick labels to the band names using:\n   `set(gca, 'XTickLabel', {'Delta', 'Theta', 'Alpha', 'Beta', 'Gamma'})`\n4. Label the y-axis as 'Power (uV^2)'\n5. Add the title 'EEG Power Spectrum by Frequency Band'\n6. Add grid lines with `grid on`",
+      "starter_code": "% Define power values\npower = [18.5 12.3 25.7 8.4 3.2];\n\n% Create the bar chart\n",
+      "solution": "power = [18.5 12.3 25.7 8.4 3.2];\nfigure;\nbar(power);\nset(gca, 'XTickLabel', {'Delta', 'Theta', 'Alpha', 'Beta', 'Gamma'});\nylabel('Power (uV^2)');\ntitle('EEG Power Spectrum by Frequency Band');\ngrid on;",
+      "hints": [
+        "Use bar(power) to create a bar chart. Remember to call figure; first",
+        "set(gca, 'XTickLabel', {'Delta', 'Theta', 'Alpha', 'Beta', 'Gamma'}) replaces the 1-5 x-axis labels with band names",
+        "Add ylabel('Power (uV^2)'), title('EEG Power Spectrum by Frequency Band'), and grid on for the final touches"
+      ],
+      "test_cases": [],
+      "requires_plot": true
+    },
+    {
+      "order_num": 3,
+      "title": "Multi-panel neuroscience figure",
+      "prompt": "Create a 2x2 multi-panel figure showing different views of EEG data.\n\n1. Create the data:\n   - `time = 0:0.01:1` (time vector from 0 to 1 second)\n   - `signal = sin(2 * pi * 10 * time)` (a 10 Hz brain wave)\n   - `noisy = signal + 0.5 * randn(size(signal))` -- BUT for reproducibility, use `rand('state', 42)` before creating the noise. Actually, use this approach:\n     `rand('state', 42); noisy = signal + 0.5 * (rand(size(signal)) - 0.5)`\n   - `band_power = [18.5 12.3 25.7 8.4 3.2]`\n   - `topo_map = [1.2 2.3 1.8; 3.1 4.5 3.3; 2.0 3.2 2.1]` (a simple 3x3 scalp map)\n\n2. Create a figure with 4 subplots:\n   - subplot(2,2,1): Plot the clean signal vs time. Title: 'Clean Signal (10 Hz)'\n   - subplot(2,2,2): Plot the noisy signal vs time. Title: 'Noisy Signal'\n   - subplot(2,2,3): Bar chart of band_power. Title: 'Band Power'\n   - subplot(2,2,4): Heatmap of topo_map using imagesc. Title: 'Scalp Map'. Add a colorbar",
+      "starter_code": "% Create the data\ntime = 0:0.01:1;\nsignal = sin(2 * pi * 10 * time);\nrand('state', 42);\nnoisy = signal + 0.5 * (rand(size(signal)) - 0.5);\nband_power = [18.5 12.3 25.7 8.4 3.2];\ntopo_map = [1.2 2.3 1.8; 3.1 4.5 3.3; 2.0 3.2 2.1];\n\n% Create 2x2 figure\nfigure;\n\n% Panel 1: Clean signal\n\n\n% Panel 2: Noisy signal\n\n\n% Panel 3: Bar chart\n\n\n% Panel 4: Scalp heatmap\n",
+      "solution": "time = 0:0.01:1;\nsignal = sin(2 * pi * 10 * time);\nrand('state', 42);\nnoisy = signal + 0.5 * (rand(size(signal)) - 0.5);\nband_power = [18.5 12.3 25.7 8.4 3.2];\ntopo_map = [1.2 2.3 1.8; 3.1 4.5 3.3; 2.0 3.2 2.1];\nfigure;\nsubplot(2, 2, 1);\nplot(time, signal);\ntitle('Clean Signal (10 Hz)');\nsubplot(2, 2, 2);\nplot(time, noisy);\ntitle('Noisy Signal');\nsubplot(2, 2, 3);\nbar(band_power);\ntitle('Band Power');\nsubplot(2, 2, 4);\nimagesc(topo_map);\ntitle('Scalp Map');\ncolorbar;",
+      "hints": [
+        "subplot(2, 2, N) selects the Nth panel in a 2x2 grid. Panel 1 is top-left, 2 is top-right, 3 is bottom-left, 4 is bottom-right",
+        "For panels 1 and 2, use plot(time, signal) and plot(time, noisy). For panel 3, use bar(band_power). For panel 4, use imagesc(topo_map)",
+        "After each subplot command, add the plot command and title(). For the last panel, add colorbar; after imagesc"
+      ],
+      "test_cases": [],
+      "requires_plot": true
+    }
+  ]
+}

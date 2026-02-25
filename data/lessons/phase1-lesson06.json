@@ -1,0 +1,53 @@
+{
+  "phase": 1,
+  "order_num": 6,
+  "title": "Plotting Basics",
+  "description": "Visualizing brain signals — creating plots, adding labels, and using subplots to display neuroscience data.",
+  "difficulty": "beginner",
+  "estimated_minutes": 35,
+  "content_md": "# Plotting Basics\n\nOne of MATLAB's superpowers is making graphs. In neuroscience, plotting is essential — you need to **see** brain signals to understand them. A wall of numbers won't tell you much, but a clear plot can reveal patterns instantly.\n\n## Your First Plot\n\nThe `plot()` function draws a line connecting data points:\n\n```matlab\ny = [1, 4, 2, 5, 3];\nplot(y)\n```\n\nThis plots the values against their index (1, 2, 3, 4, 5). But usually you want to plot against a meaningful x-axis, like time:\n\n```matlab\nt = [0, 0.25, 0.5, 0.75, 1.0];   % time in seconds\ny = [1, 4, 2, 5, 3];               % voltage readings\nplot(t, y)\n```\n\n## Adding Labels and Titles\n\nAlways label your plots! Unlabeled axes are a cardinal sin in science:\n\n```matlab\nt = 0:0.01:1;\nsignal = sin(2 * pi * 5 * t);\nplot(t, signal)\nxlabel('Time (s)')\nylabel('Voltage (uV)')\ntitle('5 Hz Brain Oscillation')\n```\n\n- `xlabel()` — labels the horizontal axis\n- `ylabel()` — labels the vertical axis\n- `title()` — adds a title at the top\n\n## Plot Customization\n\nYou can change colors and line styles:\n\n```matlab\nplot(t, signal, 'r')       % Red line\nplot(t, signal, 'b--')     % Blue dashed line\nplot(t, signal, 'g.')      % Green dots\nplot(t, signal, 'k-', 'LineWidth', 2)  % Thick black line\n```\n\nCommon color codes: `r` (red), `b` (blue), `g` (green), `k` (black), `m` (magenta)\n\nCommon line styles: `-` (solid), `--` (dashed), `:` (dotted), `.` (points)\n\n## Multiple Lines on One Plot\n\nUse `hold on` to overlay multiple signals:\n\n```matlab\nt = 0:0.01:1;\nalpha_wave = sin(2 * pi * 10 * t);\nbeta_wave = 0.5 * sin(2 * pi * 20 * t);\n\nplot(t, alpha_wave, 'b')\nhold on\nplot(t, beta_wave, 'r')\nhold off\n\nlegend('Alpha (10 Hz)', 'Beta (20 Hz)')\nxlabel('Time (s)')\nylabel('Amplitude (uV)')\ntitle('Brain Wave Comparison')\n```\n\n`legend()` adds a key so viewers know which line is which.\n\n## Subplots: Multiple Plots in One Figure\n\nSometimes you want to show related plots side by side (or stacked). `subplot` divides the figure into a grid:\n\n```matlab\nsubplot(2, 1, 1)   % 2 rows, 1 column, plot #1 (top)\nplot(t, alpha_wave)\ntitle('Alpha Wave')\n\nsubplot(2, 1, 2)   % 2 rows, 1 column, plot #2 (bottom)\nplot(t, beta_wave, 'r')\ntitle('Beta Wave')\n```\n\nThe three numbers mean: `subplot(rows, columns, which_plot)`\n\n## Grid Lines\n\nAdd a grid to make it easier to read values:\n```matlab\nplot(t, signal)\ngrid on\n```\n\n## Why This Matters\n\nNeuroscientists live and breathe plots. EEG time series, power spectra, event-related potentials, topographic maps — these are all visualizations. Learning to create clear, labeled plots is one of the most practical skills you'll gain. A good plot can communicate in seconds what would take paragraphs to describe.",
+  "exercises": [
+    {
+      "order_num": 1,
+      "title": "Plot a brain oscillation",
+      "prompt": "Create a simple sine wave that represents a 6 Hz brain oscillation (theta wave) lasting 1 second.\n\n1. Create a time vector `t` from 0 to 1 with a step of 0.001 (1000 points per second)\n2. Create the signal: `signal = sin(2 * pi * 6 * t)`\n3. Plot the signal against time\n4. Add the x-label: `Time (s)`\n5. Add the y-label: `Amplitude (uV)`\n6. Add the title: `Theta Wave (6 Hz)`",
+      "starter_code": "% Create time vector\n\n\n% Create 6 Hz sine wave\n\n\n% Plot it\n\n\n% Add labels and title\n",
+      "solution": "t = 0:0.001:1;\nsignal = sin(2 * pi * 6 * t);\nplot(t, signal)\nxlabel('Time (s)')\nylabel('Amplitude (uV)')\ntitle('Theta Wave (6 Hz)')",
+      "hints": [
+        "Time vector: t = 0:0.001:1 gives you 1001 points from 0 to 1 second.",
+        "The sine wave formula is: signal = sin(2 * pi * 6 * t) where 6 is the frequency in Hz.",
+        "Then: plot(t, signal), xlabel('Time (s)'), ylabel('Amplitude (uV)'), title('Theta Wave (6 Hz)')"
+      ],
+      "test_cases": [],
+      "requires_plot": true
+    },
+    {
+      "order_num": 2,
+      "title": "Compare two brain rhythms",
+      "prompt": "Plot two brain rhythms on the same figure to compare them:\n\n1. Create a time vector `t` from 0 to 1 with step 0.001\n2. Create an alpha wave: `alpha = sin(2 * pi * 10 * t)` (10 Hz)\n3. Create a gamma wave: `gamma = 0.4 * sin(2 * pi * 40 * t)` (40 Hz, smaller amplitude)\n4. Plot alpha in blue (`'b'`), use `hold on`, then plot gamma in red (`'r'`), then `hold off`\n5. Add a legend with labels `Alpha (10 Hz)` and `Gamma (40 Hz)`\n6. Add x-label: `Time (s)`, y-label: `Amplitude (uV)`, title: `Alpha vs Gamma Waves`",
+      "starter_code": "% Create time vector\n\n\n% Create alpha and gamma waves\n\n\n% Plot both on the same figure\n\n\n% Add legend, labels, and title\n",
+      "solution": "t = 0:0.001:1;\nalpha = sin(2 * pi * 10 * t);\ngamma = 0.4 * sin(2 * pi * 40 * t);\n\nplot(t, alpha, 'b')\nhold on\nplot(t, gamma, 'r')\nhold off\n\nlegend('Alpha (10 Hz)', 'Gamma (40 Hz)')\nxlabel('Time (s)')\nylabel('Amplitude (uV)')\ntitle('Alpha vs Gamma Waves')",
+      "hints": [
+        "Create both signals first, then use plot(t, alpha, 'b') for the blue alpha wave.",
+        "Use hold on before the second plot, then plot(t, gamma, 'r'), then hold off.",
+        "Add legend('Alpha (10 Hz)', 'Gamma (40 Hz)') and the xlabel, ylabel, title calls."
+      ],
+      "test_cases": [],
+      "requires_plot": true
+    },
+    {
+      "order_num": 3,
+      "title": "Subplot: time and frequency view",
+      "prompt": "Create a figure with two stacked plots (2 rows, 1 column) showing different views of brain data:\n\n**Top plot (subplot 1):**\n1. Create time vector: `t = 0:0.001:1`\n2. Create signal: `signal = sin(2 * pi * 8 * t) + 0.5 * sin(2 * pi * 20 * t)`\n3. Plot the signal in black (`'k'`)\n4. Title: `EEG Signal (Time Domain)`\n5. x-label: `Time (s)`, y-label: `Voltage (uV)`\n\n**Bottom plot (subplot 2):**\n1. Create frequency values: `freqs = [2, 5, 8, 12, 20, 30, 40]`\n2. Create power values: `power = [0.1, 0.3, 1.0, 0.4, 0.5, 0.2, 0.1]`\n3. Plot power vs frequency as a red line with circular markers (`'ro-'`)\n4. Title: `Power Spectrum`\n5. x-label: `Frequency (Hz)`, y-label: `Power`",
+      "starter_code": "% Top plot: time domain signal\n\n\n\n\n% Bottom plot: frequency domain (power spectrum)\n\n",
+      "solution": "t = 0:0.001:1;\nsignal = sin(2 * pi * 8 * t) + 0.5 * sin(2 * pi * 20 * t);\n\nsubplot(2, 1, 1)\nplot(t, signal, 'k')\ntitle('EEG Signal (Time Domain)')\nxlabel('Time (s)')\nylabel('Voltage (uV)')\n\nfreqs = [2, 5, 8, 12, 20, 30, 40];\npower = [0.1, 0.3, 1.0, 0.4, 0.5, 0.2, 0.1];\n\nsubplot(2, 1, 2)\nplot(freqs, power, 'ro-')\ntitle('Power Spectrum')\nxlabel('Frequency (Hz)')\nylabel('Power')",
+      "hints": [
+        "Use subplot(2, 1, 1) before the first plot and subplot(2, 1, 2) before the second plot.",
+        "The top plot uses plot(t, signal, 'k'). The bottom plot uses plot(freqs, power, 'ro-').",
+        "Add title, xlabel, ylabel after each plot call. Each subplot gets its own labels."
+      ],
+      "test_cases": [],
+      "requires_plot": true
+    }
+  ]
+}

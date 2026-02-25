@@ -1,0 +1,65 @@
+{
+  "phase": 2,
+  "order_num": 4,
+  "title": "File I/O",
+  "description": "Read and write data files, work with strings and paths — essential for batch processing experiment data.",
+  "difficulty": "intermediate",
+  "estimated_minutes": 25,
+  "content_md": "# File I/O\n\nIn a real neuroscience lab, you might have data from 50 participants, each with multiple session files. You need to **write** analysis results to files and **read** data files efficiently. This lesson teaches you how.\n\n## Writing to Text Files\n\nThe basic workflow for writing a file:\n\n```matlab\n% Open a file for writing\nfid = fopen('results.txt', 'w');\n\n% Write some text\nfprintf(fid, 'Experiment Results\\n');\nfprintf(fid, 'Subject: %s\\n', 'P001');\nfprintf(fid, 'Mean RT: %.2f ms\\n', 245.7);\n\n% Close the file\nfclose(fid);\n```\n\n### Key Concepts:\n- `fopen('filename', 'w')` opens a file for **w**riting (creates it if it doesn't exist)\n- `fid` is a \"file identifier\" — a number that refers to your open file\n- `fprintf` writes formatted text (just like printing, but to a file)\n- `fclose` closes the file — **always close your files!**\n\n## Format Specifiers\n\nInside `fprintf`, special codes control how values are printed:\n\n| Code | Meaning | Example |\n|---|---|---|\n| `%s` | String (text) | `'hello'` |\n| `%d` | Integer | `42` |\n| `%f` | Decimal number | `3.14` |\n| `%.2f` | Decimal, 2 places | `3.14` |\n| `%e` | Scientific notation | `1.23e+04` |\n| `\\n` | New line | (line break) |\n| `\\t` | Tab | (spacing) |\n\n## Reading Text Files\n\nRead a file line by line:\n\n```matlab\nfid = fopen('results.txt', 'r');\nline1 = fgetl(fid);   % Read first line\nline2 = fgetl(fid);   % Read second line\nfclose(fid);\n```\n\n`fgetl` reads one line at a time and returns it as a string.\n\n### Reading an Entire File\n\n```matlab\nfid = fopen('data.txt', 'r');\nline_num = 0;\nwhile ~feof(fid)\n    line = fgetl(fid);\n    line_num = line_num + 1;\n    disp(line);\nend\nfclose(fid);\ndisp(['Total lines: ' num2str(line_num)]);\n```\n\n`feof(fid)` returns true when you've reached the **E**nd **O**f **F**ile.\n\n## Working with Strings\n\nUseful string functions for processing filenames and data:\n\n```matlab\n% Combining strings\nsubject = 'P001';\nfilename = ['data_' subject '.mat'];\n% Result: 'data_P001.mat'\n\n% Number to string\nnum2str(42)        % '42'\nnum2str(3.14)      % '3.14'\n\n% String to number\nstr2num('42')      % 42\n\n% Formatted string\nname = sprintf('subject_%03d.mat', 5);\n% Result: 'subject_005.mat' (zero-padded to 3 digits)\n```\n\n## Building File Paths\n\nWhen working with data in different folders:\n\n```matlab\nfolder = 'experiment_data';\nfilename = 'session_01.mat';\nfull_path = [folder '/' filename];\n% Result: 'experiment_data/session_01.mat'\n```\n\nYou can also use `fullfile` for platform-independent paths:\n```matlab\nfull_path = fullfile('experiment_data', 'session_01.mat');\n```\n\n## Batch Processing Pattern\n\nProcess multiple files in a loop:\n\n```matlab\nfor i = 1:5\n    filename = sprintf('subject_%02d.mat', i);\n    disp(['Processing: ' filename]);\n    % load(filename);\n    % ... do analysis ...\nend\n```\n\nThis generates: `subject_01.mat`, `subject_02.mat`, ..., `subject_05.mat`\n\n## Why This Matters\n\nEvery neuroscience experiment generates many data files. Being able to read, write, and batch process files means you can analyze an entire study automatically instead of manually opening each file. This saves hours (or days!) of work.",
+  "exercises": [
+    {
+      "order_num": 1,
+      "title": "Write experiment results",
+      "prompt": "Write a summary of experiment results to a text file.\n\n1. Define these variables:\n   - `subject_id = 'P042'`\n   - `n_trials = 120`\n   - `mean_rt = 287.5` (mean reaction time in ms)\n   - `accuracy = 0.875` (proportion correct)\n\n2. Open a file called 'experiment_summary.txt' for writing\n3. Write these lines to the file (use fprintf with the format specifiers shown):\n   - `'Subject: P042\\n'` (use %s for the subject ID)\n   - `'Number of trials: 120\\n'` (use %d for the integer)\n   - `'Mean reaction time: 287.50 ms\\n'` (use %.2f for 2 decimal places)\n   - `'Accuracy: 87.5%%\\n'` (multiply accuracy by 100 and use %.1f; use %% to print a literal percent sign)\n4. Close the file\n5. Verify by reading and displaying the file content: open the file for reading, use a while loop with feof and fgetl to read and disp each line, then close",
+      "starter_code": "subject_id = 'P042';\nn_trials = 120;\nmean_rt = 287.5;\naccuracy = 0.875;\n\n% Write to file\n\n\n% Read and display the file to verify\n",
+      "solution": "subject_id = 'P042';\nn_trials = 120;\nmean_rt = 287.5;\naccuracy = 0.875;\nfid = fopen('experiment_summary.txt', 'w');\nfprintf(fid, 'Subject: %s\\n', subject_id);\nfprintf(fid, 'Number of trials: %d\\n', n_trials);\nfprintf(fid, 'Mean reaction time: %.2f ms\\n', mean_rt);\nfprintf(fid, 'Accuracy: %.1f%%\\n', accuracy * 100);\nfclose(fid);\nfid = fopen('experiment_summary.txt', 'r');\nwhile ~feof(fid)\n    line = fgetl(fid);\n    disp(line);\nend\nfclose(fid);",
+      "hints": [
+        "Open the file with fid = fopen('experiment_summary.txt', 'w'); and close with fclose(fid);",
+        "Use fprintf(fid, 'format', value) for each line. %s for strings, %d for integers, %.2f for 2 decimal places",
+        "To print a literal % sign in fprintf, use %%. So 'Accuracy: %.1f%%\\n' prints something like 'Accuracy: 87.5%'"
+      ],
+      "test_cases": [
+        {
+          "expected_output": "Subject: P042\nNumber of trials: 120\nMean reaction time: 287.50 ms\nAccuracy: 87.5%\n"
+        }
+      ],
+      "requires_plot": false
+    },
+    {
+      "order_num": 2,
+      "title": "Read and parse a data file",
+      "prompt": "Create a data file and then read it back, parsing the numbers.\n\n1. First, create a data file with 5 lines of tab-separated values (channel number and mean amplitude):\n   Open 'channel_data.txt' for writing and write these lines:\n   `'1\\t12.5\\n2\\t-3.8\\n3\\t8.2\\n4\\t-1.5\\n5\\t15.3\\n'`\n   (You can write this as a single fprintf call)\n   Close the file.\n\n2. Now read the data back using dlmread:\n   `data = dlmread('channel_data.txt', '\\t')`\n\n3. Extract the channel numbers (column 1) into `channels` and amplitudes (column 2) into `amplitudes`\n\n4. Display the channel with the highest amplitude. Use max with two outputs to get the index:\n   `[max_amp, idx] = max(amplitudes)`\n   Then display: the max amplitude and the corresponding channel number",
+      "starter_code": "% Step 1: Create the data file\n\n\n% Step 2: Read data with dlmread\n\n\n% Step 3: Extract columns\n\n\n% Step 4: Find and display the channel with highest amplitude\n",
+      "solution": "fid = fopen('channel_data.txt', 'w');\nfprintf(fid, '1\\t12.5\\n2\\t-3.8\\n3\\t8.2\\n4\\t-1.5\\n5\\t15.3\\n');\nfclose(fid);\ndata = dlmread('channel_data.txt', '\\t');\nchannels = data(:, 1);\namplitudes = data(:, 2);\n[max_amp, idx] = max(amplitudes);\ndisp(max_amp)\ndisp(channels(idx))",
+      "hints": [
+        "Write all lines at once: fprintf(fid, '1\\t12.5\\n2\\t-3.8\\n3\\t8.2\\n4\\t-1.5\\n5\\t15.3\\n'). The \\t creates tabs between values",
+        "dlmread('channel_data.txt', '\\t') reads the tab-separated file into a matrix. Then use data(:, 1) and data(:, 2) to extract columns",
+        "[max_amp, idx] = max(amplitudes) returns both the maximum value and its position. Use channels(idx) to get the channel number"
+      ],
+      "test_cases": [
+        {
+          "expected_output": "15.300\n5\n"
+        }
+      ],
+      "requires_plot": false
+    },
+    {
+      "order_num": 3,
+      "title": "Batch process filenames",
+      "prompt": "In a real experiment, you need to generate filenames for multiple subjects and sessions. Practice building filenames in a loop.\n\n1. Create a loop that goes through subject numbers 1, 2, and 3\n2. For each subject, create another loop for sessions 1 and 2\n3. Inside the inner loop, use `sprintf` to create a filename in the format:\n   `'sub-01_ses-01_eeg.mat'` (with zero-padded 2-digit numbers)\n4. Display each filename using disp\n\nThe output should be 6 filenames total.",
+      "starter_code": "% Loop through subjects and sessions to generate filenames\n",
+      "solution": "for sub = 1:3\n    for ses = 1:2\n        filename = sprintf('sub-%02d_ses-%02d_eeg.mat', sub, ses);\n        disp(filename)\n    end\nend",
+      "hints": [
+        "Use two nested for loops: for sub = 1:3 and for ses = 1:2",
+        "sprintf('sub-%02d_ses-%02d_eeg.mat', sub, ses) creates a formatted string. %02d means a 2-digit zero-padded integer",
+        "The complete structure is: for sub = 1:3, for ses = 1:2, filename = sprintf(..., sub, ses); disp(filename), end, end"
+      ],
+      "test_cases": [
+        {
+          "expected_output": "sub-01_ses-01_eeg.mat\nsub-01_ses-02_eeg.mat\nsub-02_ses-01_eeg.mat\nsub-02_ses-02_eeg.mat\nsub-03_ses-01_eeg.mat\nsub-03_ses-02_eeg.mat\n"
+        }
+      ],
+      "requires_plot": false
+    }
+  ]
+}

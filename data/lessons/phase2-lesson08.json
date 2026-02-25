@@ -1,0 +1,65 @@
+{
+  "phase": 2,
+  "order_num": 2,
+  "title": "Data Manipulation",
+  "description": "Sort, filter, reshape, and compute statistics on data — the core skills for preprocessing brain signals.",
+  "difficulty": "intermediate",
+  "estimated_minutes": 30,
+  "content_md": "# Data Manipulation\n\nRaw brain data is messy. Before you can analyze EEG signals, you need to clean them up: remove bad data points, compute summary statistics, and reshape data into useful formats. This lesson covers the essential data manipulation tools.\n\n## Descriptive Statistics\n\nMATLAB gives you powerful functions to summarize data:\n\n```matlab\nsignal = [2.3 -1.5 4.2 0.8 -3.1 5.7 1.2 -0.4];\n\nmean(signal)    % Average: 1.15\nmedian(signal)  % Middle value: 1.0\nstd(signal)     % Standard deviation: 2.94\nvar(signal)     % Variance: 8.67\nmin(signal)     % Minimum: -3.1\nmax(signal)     % Maximum: 5.7\nrange(signal)   % Range: max - min = 8.8\n```\n\n### Statistics Along a Dimension\n\nFor matrices, you can compute statistics along rows or columns:\n\n```matlab\neeg = [1.2 3.4 2.1; 0.8 2.9 1.7; 1.5 3.8 2.4];\n\nmean(eeg, 1)   % Mean of each column (across rows)\nmean(eeg, 2)   % Mean of each row (across columns)\n```\n\n## Sorting Data\n\nSort values in ascending or descending order:\n\n```matlab\nreaction_times = [312 198 456 234 189 378];\n\nsorted_rt = sort(reaction_times);           % Ascending: [189 198 234 312 378 456]\nsorted_desc = sort(reaction_times, 'descend');  % Descending\n```\n\nYou can also get the original indices:\n```matlab\n[sorted_vals, indices] = sort(reaction_times);\n% indices tells you where each sorted value was originally\n```\n\n## Filtering Data (Logical Indexing)\n\nThis is one of MATLAB's most powerful features. You can use a **condition** to select elements:\n\n```matlab\nsignal = [2.3 -1.5 4.2 0.8 -3.1 5.7 1.2 -0.4];\n\n% Find values above 2\nhigh_values = signal(signal > 2);\n% Result: [2.3 4.2 5.7]\n\n% Find values between -1 and 3\nnormal_range = signal(signal >= -1 & signal <= 3);\n% Result: [2.3 0.8 1.2 -0.4]\n```\n\n### Artifact Rejection in EEG\n\nIn real EEG analysis, you remove data points that exceed a threshold (they are probably caused by eye blinks or muscle movement, not brain activity):\n\n```matlab\nraw_eeg = [12 -85 15 8 -120 22 95 -10 7 130];\nthreshold = 80;\n\n% Remove artifacts (values where |amplitude| > threshold)\nclean_mask = abs(raw_eeg) <= threshold;\nclean_eeg = raw_eeg(clean_mask);\n% Result: [12 15 8 22 -10 7]\n```\n\n## Replacing Values\n\nInstead of removing bad data, sometimes you replace it:\n\n```matlab\nsignal = [2.3 -1.5 99.9 0.8 -3.1 -99.2 1.2];\nsignal(abs(signal) > 50) = 0;  % Replace outliers with 0\n% Result: [2.3 -1.5 0 0.8 -3.1 0 1.2]\n```\n\n## Reshaping Data\n\nThe `reshape` function reorganizes data without changing the values:\n\n```matlab\n% A 1D signal with 12 time points\nlong_signal = 1:12;\n\n% Reshape into 3 epochs of 4 time points each\nepochs = reshape(long_signal, 4, 3);\n% Result: 4x3 matrix (4 time points per epoch, 3 epochs)\n% Note: MATLAB fills columns first!\n```\n\n**Important**: `reshape` fills **column by column**. So `reshape(1:12, 4, 3)` gives:\n```\n 1  5  9\n 2  6 10\n 3  7 11\n 4  8 12\n```\n\nIf you want it filled row by row, transpose afterward:\n```matlab\nepochs = reshape(long_signal, 3, 4)';\n% Now: 3 rows (epochs) x 4 columns (time points)\n```\n\n## Useful Summary\n\n| Function | What it does |\n|---|---|\n| `mean(x)` | Average |\n| `median(x)` | Middle value |\n| `std(x)` | Standard deviation |\n| `sort(x)` | Sort ascending |\n| `x(condition)` | Logical indexing |\n| `reshape(x, r, c)` | Reshape to r rows, c columns |",
+  "exercises": [
+    {
+      "order_num": 1,
+      "title": "EEG amplitude statistics",
+      "prompt": "You have recorded EEG amplitudes (in microvolts) from a single channel during a 1-second window:\n\n`amplitudes = [12.5 -8.3 15.1 -2.7 22.4 -11.6 7.8 -5.2 18.9 -1.4]`\n\nCalculate and display:\n1. The mean amplitude\n2. The standard deviation\n3. The median amplitude\n4. The range (max minus min)\n\nDisplay each value on its own line using `disp`.",
+      "starter_code": "amplitudes = [12.5 -8.3 15.1 -2.7 22.4 -11.6 7.8 -5.2 18.9 -1.4];\n\n% Calculate and display the mean\n\n\n% Calculate and display the standard deviation\n\n\n% Calculate and display the median\n\n\n% Calculate and display the range\n",
+      "solution": "amplitudes = [12.5 -8.3 15.1 -2.7 22.4 -11.6 7.8 -5.2 18.9 -1.4];\ndisp(mean(amplitudes))\ndisp(std(amplitudes))\ndisp(median(amplitudes))\ndisp(max(amplitudes) - min(amplitudes))",
+      "hints": [
+        "Use the built-in functions: mean(), std(), median(), max(), min()",
+        "The range is calculated as max(amplitudes) - min(amplitudes)",
+        "Wrap each calculation in disp(): disp(mean(amplitudes)), disp(std(amplitudes)), etc."
+      ],
+      "test_cases": [
+        {
+          "expected_output": "4.7500\n12.1243\n3.2500\n34\n"
+        }
+      ],
+      "requires_plot": false
+    },
+    {
+      "order_num": 2,
+      "title": "Artifact rejection",
+      "prompt": "EEG signals often contain artifacts — abnormally large values caused by eye blinks or muscle movements. These need to be removed before analysis.\n\nGiven a raw EEG signal:\n`raw = [15 -82 8 120 -5 12 -95 22 7 -110 18 3]`\n\n1. Set a threshold of 80 microvolts\n2. Create a clean signal by keeping only values where the absolute value is less than or equal to the threshold\n3. Display the clean signal\n4. Display how many data points were removed (original length minus clean length)",
+      "starter_code": "raw = [15 -82 8 120 -5 12 -95 22 7 -110 18 3];\nthreshold = 80;\n\n% Keep only values within the threshold\n\n\n% Display the clean signal\n\n\n% Display count of removed points\n",
+      "solution": "raw = [15 -82 8 120 -5 12 -95 22 7 -110 18 3];\nthreshold = 80;\nclean = raw(abs(raw) <= threshold);\ndisp(clean)\ndisp(length(raw) - length(clean))",
+      "hints": [
+        "Use abs() to get the absolute value of each element, then compare with <=",
+        "Logical indexing: clean = raw(abs(raw) <= threshold) keeps only values within range",
+        "Count removed points: disp(length(raw) - length(clean))"
+      ],
+      "test_cases": [
+        {
+          "expected_output": "   15    8   -5   12   22    7   18    3\n4\n"
+        }
+      ],
+      "requires_plot": false
+    },
+    {
+      "order_num": 3,
+      "title": "Reshape signal into epochs",
+      "prompt": "In EEG analysis, a long continuous signal is often divided into short segments called **epochs** (e.g., one epoch per trial in an experiment).\n\nGiven a continuous signal of 20 data points:\n`signal = [3 7 2 9 5 8 1 6 4 10 11 3 8 2 7 5 9 1 6 4]`\n\n1. Reshape this into a 5x4 matrix called `epochs` where each column is one epoch of 5 time points. Use `reshape(signal, 5, 4)`\n2. Display the epochs matrix\n3. Calculate and display the mean of each epoch (mean of each column). Use `mean(epochs, 1)`",
+      "starter_code": "signal = [3 7 2 9 5 8 1 6 4 10 11 3 8 2 7 5 9 1 6 4];\n\n% Reshape into 5 time points x 4 epochs\n\n\n% Display the epochs matrix\n\n\n% Display the mean of each epoch\n",
+      "solution": "signal = [3 7 2 9 5 8 1 6 4 10 11 3 8 2 7 5 9 1 6 4];\nepochs = reshape(signal, 5, 4);\ndisp(epochs)\ndisp(mean(epochs, 1))",
+      "hints": [
+        "reshape(signal, rows, cols) rearranges the signal into a matrix. MATLAB fills column by column",
+        "epochs = reshape(signal, 5, 4) creates a 5-row, 4-column matrix",
+        "mean(epochs, 1) computes the mean along dimension 1 (down each column), giving one mean per epoch"
+      ],
+      "test_cases": [
+        {
+          "expected_output": "    3    8   11    5\n    7    1    3    9\n    2    6    8    1\n    9    4    2    6\n    5   10    7    4\n   5.2000   5.8000   6.2000   5.0000\n"
+        }
+      ],
+      "requires_plot": false
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "phase": 2,
+  "order_num": 1,
+  "title": "Loading Data",
+  "description": "Learn to load data from files into MATLAB — essential for working with EEG recordings and experiment results.",
+  "difficulty": "intermediate",
+  "estimated_minutes": 30,
+  "content_md": "# Loading Data\n\nIn real neuroscience research, you rarely type data by hand. Instead, your EEG system, eye tracker, or stimulus program saves data to files. Your job is to **load** that data into MATLAB so you can analyze it.\n\nLet's learn the key tools for getting data into your workspace.\n\n## Saving and Loading `.mat` Files\n\nMATLAB has its own file format: `.mat` files. These are great because they preserve your variable names and types perfectly.\n\n### Saving data\n```matlab\neeg_signal = [1.2 3.4 2.1 5.6 4.3];\nsampling_rate = 256;\nsave('my_data.mat', 'eeg_signal', 'sampling_rate');\n```\n\nThis creates a file called `my_data.mat` containing both variables.\n\n### Loading data\n```matlab\nload('my_data.mat');\n% Now eeg_signal and sampling_rate are back in your workspace!\n```\n\nYou can also load specific variables:\n```matlab\nload('my_data.mat', 'eeg_signal');\n% Only eeg_signal is loaded\n```\n\n## Reading CSV Files with `csvread`\n\nCSV (Comma-Separated Values) files are simple text files where numbers are separated by commas. Many experiment programs export data this way.\n\n```matlab\ndata = csvread('experiment_results.csv');\n```\n\nIf your CSV has a header row, you can skip it:\n```matlab\ndata = csvread('experiment_results.csv', 1, 0);\n% Skips 1 row, 0 columns\n```\n\n## Reading Delimited Files with `dlmread`\n\nSome files use tabs or other separators instead of commas. `dlmread` handles any delimiter:\n\n```matlab\n% Tab-delimited file\ndata = dlmread('data.txt', '\\t');\n\n% Space-delimited file\ndata = dlmread('data.txt', ' ');\n\n% Comma-delimited (same as csvread)\ndata = dlmread('data.csv', ',');\n```\n\n## Working with Loaded Data\n\nOnce data is loaded, it's just a regular matrix. You can use everything you already know:\n\n```matlab\ndata = csvread('eeg_recording.csv');\n\n% Check the size\n[num_channels, num_timepoints] = size(data);\n\n% Get the first channel\nchannel_1 = data(1, :);\n\n% Get the first 100 time points from all channels\nfirst_segment = data(:, 1:100);\n```\n\n## Practical Example: Loading an EEG Recording\n\nImagine you have a file with 4 EEG channels recorded over 8 time points:\n\n```matlab\n% Save some sample EEG data\neeg = [1.2 3.4 2.1 5.6 4.3 2.8 1.9 3.7;\n       0.8 2.9 1.7 4.2 3.8 2.1 1.4 3.2;\n       1.5 3.8 2.4 6.1 4.7 3.1 2.2 4.0;\n       0.9 3.1 1.9 5.0 4.0 2.5 1.7 3.5];\nsave('eeg_recording.mat', 'eeg');\n\n% Now load it back\nclear;  % Clear workspace\nload('eeg_recording.mat');\ndisp(size(eeg));\n% Output: 4  8  (4 channels, 8 time points)\n```\n\n## Tips\n\n- Always check `size()` after loading data to make sure it looks right\n- Use `whos` to see what variables were loaded\n- `.mat` files are best for MATLAB work; CSV files are best for sharing with other programs\n- If your data does not load correctly, check for header rows or extra whitespace in the file",
+  "exercises": [
+    {
+      "order_num": 1,
+      "title": "Save and load experiment data",
+      "prompt": "Create a simulated EEG dataset and practice saving and loading it.\n\n1. Create a variable `eeg_data` containing this 3x5 matrix (3 channels, 5 time points):\n   [1.2 2.3 3.1 2.8 1.9; 0.8 1.9 2.7 2.2 1.5; 1.5 2.6 3.4 3.0 2.1]\n2. Create a variable `fs` (sampling rate) equal to 256\n3. Save both variables to a file called 'recording.mat'\n4. Clear the workspace using `clear`\n5. Load the file back\n6. Display `fs` and then display the size of `eeg_data`",
+      "starter_code": "% Step 1: Create the EEG data matrix\n\n\n% Step 2: Set the sampling rate\n\n\n% Step 3: Save to file\n\n\n% Step 4: Clear workspace\n\n\n% Step 5: Load the file\n\n\n% Step 6: Display fs and the size of eeg_data\n",
+      "solution": "eeg_data = [1.2 2.3 3.1 2.8 1.9; 0.8 1.9 2.7 2.2 1.5; 1.5 2.6 3.4 3.0 2.1];\nfs = 256;\nsave('recording.mat', 'eeg_data', 'fs');\nclear;\nload('recording.mat');\ndisp(fs)\ndisp(size(eeg_data))",
+      "hints": [
+        "Use semicolons in the matrix to separate rows: [row1; row2; row3]",
+        "The save function takes the filename first, then variable names as strings: save('file.mat', 'var1', 'var2')",
+        "After clear and load, use disp(fs) and disp(size(eeg_data)) to show the results"
+      ],
+      "test_cases": [
+        {
+          "expected_output": "256\n   3   5\n"
+        }
+      ],
+      "requires_plot": false
+    },
+    {
+      "order_num": 2,
+      "title": "Parse CSV-style data",
+      "prompt": "Sometimes you need to work with data that was read from a CSV file. Simulate this by creating a matrix directly (as if csvread had loaded it), then extract information.\n\n1. Create a variable `trial_data` with this matrix (rows = trials, columns = reaction time in ms, accuracy 0/1, condition 1/2):\n   [245 1 1; 312 0 2; 198 1 1; 278 1 2; 356 0 1; 201 1 2]\n2. Display the total number of trials (number of rows)\n3. Extract column 1 (reaction times) into `rt` and display the mean reaction time\n4. Extract column 2 (accuracy) into `acc` and display the mean accuracy",
+      "starter_code": "% Step 1: Create the trial data matrix\n\n\n% Step 2: Display number of trials\n\n\n% Step 3: Extract and display mean reaction time\n\n\n% Step 4: Extract and display mean accuracy\n",
+      "solution": "trial_data = [245 1 1; 312 0 2; 198 1 1; 278 1 2; 356 0 1; 201 1 2];\ndisp(size(trial_data, 1))\nrt = trial_data(:, 1);\ndisp(mean(rt))\nacc = trial_data(:, 2);\ndisp(mean(acc))",
+      "hints": [
+        "Use size(matrix, 1) to get just the number of rows (first dimension)",
+        "Extract a column using the colon operator: rt = trial_data(:, 1) means all rows, column 1",
+        "mean() calculates the average. For accuracy, mean of [1 0 1 1 0 1] gives the proportion correct"
+      ],
+      "test_cases": [
+        {
+          "expected_output": "6\n265\n0.6667\n"
+        }
+      ],
+      "requires_plot": false
+    },
+    {
+      "order_num": 3,
+      "title": "Extract channels from loaded data",
+      "prompt": "You have loaded an EEG dataset where rows are channels and columns are time points. Extract specific channels and compute a summary.\n\n1. Create the data matrix (4 channels, 6 time points):\n   `eeg = [2.1 3.5 1.8 4.2 2.9 3.1; 1.5 2.8 1.2 3.6 2.3 2.7; 3.0 4.1 2.5 5.0 3.6 3.8; 1.8 3.2 1.5 3.9 2.6 3.0]`\n2. Extract channel 3 (third row) into a variable `ch3` and display it\n3. Extract time points 2 through 5 from all channels into `segment` and display its size\n4. Calculate the mean amplitude for each channel (mean across columns) and display the result",
+      "starter_code": "% Step 1: Create the EEG matrix\n\n\n% Step 2: Extract channel 3 and display\n\n\n% Step 3: Extract time segment and display size\n\n\n% Step 4: Mean amplitude per channel\n",
+      "solution": "eeg = [2.1 3.5 1.8 4.2 2.9 3.1; 1.5 2.8 1.2 3.6 2.3 2.7; 3.0 4.1 2.5 5.0 3.6 3.8; 1.8 3.2 1.5 3.9 2.6 3.0];\nch3 = eeg(3, :);\ndisp(ch3)\nsegment = eeg(:, 2:5);\ndisp(size(segment))\ndisp(mean(eeg, 2))",
+      "hints": [
+        "Extract a full row with eeg(3, :) — row 3, all columns",
+        "Extract a range of columns with eeg(:, 2:5) — all rows, columns 2 to 5",
+        "mean(eeg, 2) computes the mean along dimension 2 (across columns), giving one value per row (channel)"
+      ],
+      "test_cases": [
+        {
+          "expected_output": "   3.0000   4.1000   2.5000   5.0000   3.6000   3.8000\n   4   4\n   2.9333\n   2.3500\n   3.6667\n   2.6667\n"
+        }
+      ],
+      "requires_plot": false
+    }
+  ]
+}

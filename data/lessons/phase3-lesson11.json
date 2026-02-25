@@ -1,0 +1,65 @@
+{
+  "phase": 3,
+  "order_num": 1,
+  "title": "Understanding Signals",
+  "description": "Learn what signals are, how sampling works, and why the Nyquist theorem matters — all through the lens of brain wave recordings.",
+  "difficulty": "intermediate",
+  "estimated_minutes": 30,
+  "content_md": "# Understanding Signals\n\nEvery thought you have, every memory you recall, every sensation you feel — your brain produces **electrical signals** while doing all of it. In this lesson, you'll learn how we capture and represent those signals digitally.\n\n## What Is a Signal?\n\nA **signal** is simply a quantity that changes over time. When a neuroscientist places electrodes on your scalp (an EEG recording), they measure tiny voltage changes — typically between 10 and 100 microvolts. That voltage going up and down over time **is** your brain signal.\n\nIn MATLAB, we represent a signal as a **vector of numbers** — one number for each point in time:\n\n```matlab\n% A tiny example signal: 5 voltage measurements over time\nsignal = [0.2, 0.5, 0.8, 0.4, 0.1];\n```\n\nThat's it! A signal is just a list of numbers captured at regular intervals.\n\n## Time Series and Sampling Rate\n\nWhen we record EEG, we don't capture the voltage **continuously** — we take snapshots at regular intervals. This is called **sampling**.\n\nThe **sampling rate** (also called sampling frequency, abbreviated `Fs` or `fs`) tells you how many snapshots per second you take. It's measured in **Hertz (Hz)**.\n\n- **256 Hz** = 256 samples per second (common in clinical EEG)\n- **512 Hz** = 512 samples per second (common in research EEG)\n- **1000 Hz** = 1000 samples per second (high-resolution recordings)\n\nIf you record for 2 seconds at 256 Hz, you get:\n\n```matlab\nFs = 256;             % Sampling rate in Hz\nduration = 2;         % Duration in seconds\nnum_samples = Fs * duration;  % 512 samples total!\n```\n\n## Creating a Time Vector\n\nTo work with signals, we need a **time vector** — a list of time points at which each sample was taken:\n\n```matlab\nFs = 256;                           % 256 samples per second\nduration = 1;                       % 1 second\nt = 0 : 1/Fs : duration - 1/Fs;    % Time vector from 0 to ~1 second\n```\n\nThe spacing between time points is `1/Fs`. At 256 Hz, each sample is `1/256 = 0.0039` seconds apart.\n\n## Sine Waves: The Building Blocks\n\nHere's a beautiful fact: **every brain signal can be broken down into a combination of sine waves** at different frequencies. This is the foundation of EEG analysis.\n\nA sine wave is the simplest possible signal — a smooth, repeating oscillation:\n\n```matlab\nFs = 256;                    % Sampling rate\nt = 0 : 1/Fs : 1 - 1/Fs;    % 1 second time vector\nfreq = 10;                   % 10 Hz (alpha brain wave!)\nsignal = sin(2 * pi * freq * t);\n```\n\nThe formula `sin(2 * pi * freq * t)` creates a sine wave at the specified frequency. Think of `2 * pi * freq` as \"how fast the wave oscillates.\" A 10 Hz wave completes 10 full cycles per second — that's the **alpha rhythm**, associated with relaxation and closing your eyes!\n\n## Brain Wave Frequency Bands\n\nNeuroscientists organize brain waves by frequency:\n\n| Band | Frequency | Associated With |\n|------|-----------|----------------|\n| **Delta** | 0.5 - 4 Hz | Deep sleep |\n| **Theta** | 4 - 8 Hz | Drowsiness, meditation |\n| **Alpha** | 8 - 13 Hz | Relaxed, eyes closed |\n| **Beta** | 13 - 30 Hz | Active thinking, focus |\n| **Gamma** | 30 - 100 Hz | Higher cognitive functions |\n\n## The Nyquist Theorem: Why Sampling Rate Matters\n\nHere's a critical rule in signal processing:\n\n> **To accurately capture a frequency, you must sample at least TWICE as fast as that frequency.**\n\nThis is the **Nyquist theorem**. The highest frequency you can reliably measure is called the **Nyquist frequency**:\n\n```\nNyquist frequency = Sampling rate / 2\n```\n\nFor example, if your EEG samples at 256 Hz:\n- Nyquist frequency = 256 / 2 = **128 Hz**\n- You can accurately capture any brain wave up to 128 Hz\n- That covers all standard brain wave bands (delta through gamma)!\n\nIf you tried to capture a 200 Hz signal with 256 Hz sampling, it would appear as a **different, lower frequency** — a phenomenon called **aliasing**. It's like trying to film a helicopter rotor with a slow camera — the blades appear to spin backwards!\n\n## Combining Signals\n\nReal EEG is never a single clean sine wave. It's a **mixture** of many frequencies all happening at once. We can simulate this:\n\n```matlab\nFs = 256;\nt = 0 : 1/Fs : 1 - 1/Fs;\nalpha = sin(2 * pi * 10 * t);     % 10 Hz alpha wave\nbeta = 0.5 * sin(2 * pi * 20 * t); % 20 Hz beta wave (half amplitude)\neeg_simulated = alpha + beta;      % Combined signal!\n```\n\nThis gives you a signal that looks like a wobbly wave — the large slow alpha rhythm with the smaller, faster beta rhythm riding on top. This is exactly what real EEG looks like!\n\n## Summary\n\n- **Signals** are sequences of numbers measured over time\n- **Sampling rate** determines how many measurements per second\n- **Sine waves** are the building blocks — brain waves are categorized by their frequency\n- The **Nyquist theorem** says you need at least 2x the frequency as your sampling rate\n- Real brain signals are **combinations** of many frequencies",
+  "exercises": [
+    {
+      "order_num": 1,
+      "title": "Create an alpha brain wave",
+      "prompt": "Create a 10 Hz sine wave (alpha brain wave) that lasts for 1 second, using a sampling rate of 256 Hz.\n\n1. Set the sampling rate `Fs` to 256\n2. Create a time vector `t` from 0 to just before 1 second, with steps of `1/Fs`\n3. Create the sine wave in a variable called `signal` using `sin(2 * pi * freq * t)` with `freq = 10`\n4. Display the number of samples (the length of the signal) using `disp(length(signal))`\n5. Display the value of the signal at sample 1 (it should be 0 since sin(0) = 0) using `disp(signal(1))`",
+      "starter_code": "% Create a 10 Hz alpha wave at 256 Hz sampling rate\nFs = 256;\nfreq = 10;\n\n% Create time vector (0 to just under 1 second)\n\n% Create the sine wave signal\n\n% Display the number of samples\n\n% Display the first sample value\n",
+      "solution": "Fs = 256;\nfreq = 10;\nt = 0 : 1/Fs : 1 - 1/Fs;\nsignal = sin(2 * pi * freq * t);\ndisp(length(signal))\ndisp(signal(1))",
+      "hints": [
+        "The time vector goes from 0 to (1 - 1/Fs) with steps of 1/Fs. Use the colon operator: t = 0 : 1/Fs : 1 - 1/Fs",
+        "The sine wave formula is: signal = sin(2 * pi * freq * t) where freq is 10.",
+        "Use length(signal) to get the number of samples and signal(1) to get the first value. The full solution: t = 0:1/Fs:1-1/Fs; signal = sin(2*pi*freq*t); disp(length(signal)); disp(signal(1))"
+      ],
+      "test_cases": [
+        {
+          "expected_output": "256\n0\n"
+        }
+      ],
+      "requires_plot": false
+    },
+    {
+      "order_num": 2,
+      "title": "Calculate Nyquist frequencies",
+      "prompt": "A neuroscience lab has three EEG systems with different sampling rates: 256 Hz, 512 Hz, and 1000 Hz.\n\nFor each system, calculate the Nyquist frequency (the maximum frequency that can be accurately captured) and display it.\n\nRemember: Nyquist frequency = Sampling rate / 2\n\nDisplay each result on its own line using disp().",
+      "starter_code": "% Three EEG systems\nFs1 = 256;\nFs2 = 512;\nFs3 = 1000;\n\n% Calculate and display each Nyquist frequency\n",
+      "solution": "Fs1 = 256;\nFs2 = 512;\nFs3 = 1000;\ndisp(Fs1 / 2)\ndisp(Fs2 / 2)\ndisp(Fs3 / 2)",
+      "hints": [
+        "The Nyquist frequency is simply the sampling rate divided by 2.",
+        "For each system: nyquist = Fs / 2. Then use disp() to show it.",
+        "disp(Fs1 / 2); disp(Fs2 / 2); disp(Fs3 / 2) — this will print 128, 256, and 500."
+      ],
+      "test_cases": [
+        {
+          "expected_output": "128\n256\n500\n"
+        }
+      ],
+      "requires_plot": false
+    },
+    {
+      "order_num": 3,
+      "title": "Combine alpha and beta brain waves",
+      "prompt": "Create a simulated EEG signal that combines two brain wave rhythms and visualize them.\n\n1. An **alpha wave** at 10 Hz with amplitude 1.0\n2. A **beta wave** at 20 Hz with amplitude 0.5\n\nUse a sampling rate of 256 Hz and a duration of 1 second.\n\nCombine them by adding: `eeg = alpha + beta`\n\nDisplay the total number of samples: `disp(length(eeg))`\n\nThen create a plot with 3 subplots showing:\n- Top: the alpha wave alone\n- Middle: the beta wave alone\n- Bottom: the combined EEG signal\n\nAdd a title to each subplot. This will help you SEE how brain waves combine!",
+      "starter_code": "% Sampling parameters\nFs = 256;\nt = 0 : 1/Fs : 1 - 1/Fs;\n\n% Create alpha wave (10 Hz, amplitude 1.0)\n\n% Create beta wave (20 Hz, amplitude 0.5)\n\n% Combine into EEG signal\n\n% Display number of samples\n\n% Plot all three signals in subplots\n",
+      "solution": "Fs = 256;\nt = 0 : 1/Fs : 1 - 1/Fs;\nalpha = sin(2 * pi * 10 * t);\nbeta = 0.5 * sin(2 * pi * 20 * t);\neeg = alpha + beta;\ndisp(length(eeg))\nsubplot(3, 1, 1);\nplot(t, alpha);\ntitle('Alpha Wave (10 Hz)');\nsubplot(3, 1, 2);\nplot(t, beta);\ntitle('Beta Wave (20 Hz)');\nsubplot(3, 1, 3);\nplot(t, eeg);\ntitle('Combined EEG Signal');",
+      "hints": [
+        "Alpha wave: alpha = sin(2 * pi * 10 * t). Beta wave: beta = 0.5 * sin(2 * pi * 20 * t). The 0.5 multiplier sets the amplitude.",
+        "Combine them by simple addition: eeg = alpha + beta. Display the length with disp(length(eeg)).",
+        "Plot with subplot(3,1,1); plot(t, alpha); title('Alpha Wave (10 Hz)'); then subplot(3,1,2) for beta and subplot(3,1,3) for the combined eeg."
+      ],
+      "test_cases": [
+        {
+          "expected_output": "256\n"
+        }
+      ],
+      "requires_plot": true
+    }
+  ]
+}

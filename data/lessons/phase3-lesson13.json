@@ -1,0 +1,65 @@
+{
+  "phase": 3,
+  "order_num": 3,
+  "title": "Fourier Transform",
+  "description": "Discover how the FFT lets you peek inside a brain signal to see which frequencies are present — the foundation of all EEG frequency analysis.",
+  "difficulty": "intermediate",
+  "estimated_minutes": 40,
+  "content_md": "# Fourier Transform\n\nHere is one of the most powerful ideas in all of signal processing:\n\n> **Any signal — no matter how complex — can be broken down into a sum of simple sine waves at different frequencies.**\n\nThis is the key insight behind the **Fourier Transform**, and it is the reason we can look at a messy EEG recording and say \"this person has strong alpha waves\" or \"this patient's theta activity is abnormal.\"\n\n## From Time to Frequency\n\nWhen you look at an EEG signal plotted over time, you see voltage going up and down. This is the **time domain** — we see *when* things happen.\n\nBut often we want to ask: **which frequencies are present?** That's the **frequency domain**. The Fourier Transform takes you from time domain to frequency domain:\n\n```\nTime domain:   \"The signal wobbles in a complicated way over 2 seconds\"\nFrequency domain: \"The signal contains 10 Hz (strong), 4 Hz (medium), 25 Hz (weak)\"\n```\n\nIt's like listening to a chord on a piano and being able to identify the individual notes.\n\n## The FFT: Fast Fourier Transform\n\nThe **FFT** (Fast Fourier Transform) is the algorithm that computes the Fourier Transform efficiently. In MATLAB/Octave, it's just one function call:\n\n```matlab\nY = fft(signal);\n```\n\nThat's it! But the output `Y` is a vector of **complex numbers** (numbers with real and imaginary parts). What we usually care about is the **magnitude** — how strong each frequency is:\n\n```matlab\nmagnitude = abs(Y);   % abs() gets the magnitude of complex numbers\n```\n\n## Building the Frequency Axis\n\nThe FFT gives you magnitudes, but you also need to know **which frequency** each value corresponds to. Here's how to create the frequency axis:\n\n```matlab\nFs = 256;                      % Sampling rate\nN = length(signal);            % Number of samples\nf = (0 : N-1) * (Fs / N);     % Frequency vector\n```\n\nImportant: the FFT output is **symmetric** — the second half is a mirror of the first half. We only need the first half (up to the Nyquist frequency):\n\n```matlab\nhalf = 1 : floor(N/2);    % Indices for the first half\nf_half = f(half);          % Frequencies for first half\nmag_half = magnitude(half); % Magnitudes for first half\n```\n\n## A Complete FFT Example\n\nLet's analyze a simple 10 Hz sine wave:\n\n```matlab\n% Create a 10 Hz signal\nFs = 256;\nt = 0 : 1/Fs : 1 - 1/Fs;\nsignal = sin(2 * pi * 10 * t);\n\n% Compute FFT\nY = fft(signal);\nmagnitude = abs(Y);\n\n% Frequency axis (first half only)\nN = length(signal);\nf = (0 : N-1) * (Fs / N);\nhalf = 1 : floor(N/2);\n\n% Plot\nplot(f(half), magnitude(half));\nxlabel('Frequency (Hz)');\nylabel('Magnitude');\ntitle('Frequency Spectrum');\n```\n\nYou'll see a sharp peak at exactly 10 Hz. That's the FFT telling you: \"there is a 10 Hz component in your signal!\"\n\n## Power Spectrum\n\nIn neuroscience, we usually look at the **power spectrum** rather than the magnitude spectrum. Power is simply the magnitude squared, often normalized by the number of samples:\n\n```matlab\npower = (abs(Y) .^ 2) / N;\n```\n\nOr equivalently, `power = magnitude .^ 2 / N`.\n\nPower tells you how much **energy** is at each frequency. When neuroscientists say \"alpha power increased during meditation,\" they mean the power at 8-13 Hz went up.\n\n## Brain Wave Frequency Bands (Reminder)\n\nHere's why the FFT matters for neuroscience — these are the frequency bands we look for:\n\n| Band | Frequency Range | What It Tells Us |\n|------|----------------|------------------|\n| **Delta** | 0.5 - 4 Hz | Deep sleep, brain injury |\n| **Theta** | 4 - 8 Hz | Drowsiness, memory encoding, meditation |\n| **Alpha** | 8 - 13 Hz | Relaxation, idling, eyes closed |\n| **Beta** | 13 - 30 Hz | Active thinking, concentration, anxiety |\n| **Gamma** | 30 - 100 Hz | Binding, consciousness, perception |\n\nThe FFT lets us **measure** the strength of each of these bands in any EEG recording.\n\n## Finding Peak Frequency\n\nTo find the **dominant frequency** in a signal (the loudest \"note\"):\n\n```matlab\n[peak_value, peak_index] = max(magnitude(half));\npeak_frequency = f(peak_index);\ndisp(['Peak frequency: ' num2str(peak_frequency) ' Hz']);\n```\n\nThe `max()` function returns both the maximum value and its **index** (position). We then look up what frequency that index corresponds to.\n\n## Analyzing a Complex Signal\n\nReal EEG has many frequencies mixed together. Let's see the FFT pull them apart:\n\n```matlab\nFs = 256;\nt = 0 : 1/Fs : 2 - 1/Fs;  % 2 seconds for better resolution\n\n% Simulate EEG with multiple brain waves\ndelta = 2.0 * sin(2 * pi * 2 * t);     % Strong delta\nalpha = 1.5 * sin(2 * pi * 10 * t);    % Strong alpha\nbeta  = 0.5 * sin(2 * pi * 20 * t);    % Weak beta\neeg = delta + alpha + beta;\n\n% FFT\nY = fft(eeg);\nmagnitude = abs(Y);\nN = length(eeg);\nf = (0 : N-1) * (Fs / N);\nhalf = 1 : floor(N/2);\n\nplot(f(half), magnitude(half));\n```\n\nYou'll see three distinct peaks at 2, 10, and 20 Hz — the FFT perfectly separates the mixed frequencies!\n\n## Frequency Resolution\n\nOne important detail: the **frequency resolution** (how precisely you can distinguish nearby frequencies) depends on the duration of your signal:\n\n```\nFrequency resolution = Fs / N = 1 / duration\n```\n\nSo a 1-second recording gives 1 Hz resolution (you can tell 10 Hz from 11 Hz but not 10 Hz from 10.5 Hz). A 2-second recording gives 0.5 Hz resolution. Longer recordings give better frequency precision.\n\n## Summary\n\n- The **Fourier Transform** converts signals from time domain to frequency domain\n- **FFT** (`fft()`) is the fast algorithm to compute it\n- Use `abs()` to get **magnitude** from the complex FFT output\n- **Power spectrum** = magnitude squared (divided by N)\n- Build a **frequency axis** to know which frequency each FFT bin represents\n- Only use the **first half** of the FFT (the rest is a mirror)\n- The FFT is how neuroscientists measure **brain wave band power**",
+  "exercises": [
+    {
+      "order_num": 1,
+      "title": "Find the frequency of a sine wave",
+      "prompt": "Use the FFT to analyze a mystery sine wave and find its frequency.\n\n1. Create a sine wave at 15 Hz (but pretend you don't know the frequency!):\n   - `Fs = 256; t = 0:1/Fs:1-1/Fs;`\n   - `signal = sin(2 * pi * 15 * t);`\n\n2. Compute the FFT and get the magnitude:\n   - `Y = fft(signal);`\n   - `magnitude = abs(Y);`\n\n3. Create the frequency axis (first half only):\n   - `N = length(signal);`\n   - `f = (0 : N-1) * (Fs / N);`\n   - `half = 1 : floor(N/2);`\n\n4. Find the peak frequency:\n   - Use `[peak_val, peak_idx] = max(magnitude(half));`\n   - `peak_freq = f(peak_idx);`\n\n5. Display the peak frequency: `disp(peak_freq)`",
+      "starter_code": "% Create the signal\nFs = 256;\nt = 0 : 1/Fs : 1 - 1/Fs;\nsignal = sin(2 * pi * 15 * t);\n\n% Compute FFT\n\n% Get magnitude\n\n% Create frequency axis\n\n% Find and display peak frequency\n",
+      "solution": "Fs = 256;\nt = 0 : 1/Fs : 1 - 1/Fs;\nsignal = sin(2 * pi * 15 * t);\nY = fft(signal);\nmagnitude = abs(Y);\nN = length(signal);\nf = (0 : N-1) * (Fs / N);\nhalf = 1 : floor(N/2);\n[peak_val, peak_idx] = max(magnitude(half));\npeak_freq = f(peak_idx);\ndisp(peak_freq)",
+      "hints": [
+        "After creating the signal: Y = fft(signal); magnitude = abs(Y); — this gives you the strength of each frequency.",
+        "Create the frequency axis: N = length(signal); f = (0:N-1) * (Fs/N); half = 1:floor(N/2);",
+        "Find the peak: [peak_val, peak_idx] = max(magnitude(half)); peak_freq = f(peak_idx); disp(peak_freq). The answer should be 15."
+      ],
+      "test_cases": [
+        {
+          "expected_output": "15\n"
+        }
+      ],
+      "requires_plot": false
+    },
+    {
+      "order_num": 2,
+      "title": "Calculate the power spectrum",
+      "prompt": "Compute and analyze the power spectrum of a signal containing a 10 Hz alpha wave.\n\n1. Create a 10 Hz sine wave with amplitude 2, lasting 2 seconds:\n   - `Fs = 256; t = 0:1/Fs:2-1/Fs;`\n   - `signal = 2 * sin(2 * pi * 10 * t);`\n\n2. Compute the FFT and the power spectrum:\n   - `Y = fft(signal);`\n   - `N = length(signal);`\n   - `power = (abs(Y) .^ 2) / N;`\n\n3. Create the frequency axis (first half):\n   - `f = (0 : N-1) * (Fs / N);`\n   - `half = 1 : floor(N/2);`\n\n4. Find the peak frequency and its power:\n   - `[peak_power, peak_idx] = max(power(half));`\n   - `peak_freq = f(peak_idx);`\n\n5. Display the peak frequency and the peak power (rounded to 1 decimal):\n   - `disp(peak_freq)`\n   - `disp(round(peak_power * 10) / 10)`",
+      "starter_code": "% Create signal: 10 Hz alpha wave, amplitude 2, 2 seconds\nFs = 256;\nt = 0 : 1/Fs : 2 - 1/Fs;\nsignal = 2 * sin(2 * pi * 10 * t);\n\n% Compute FFT\n\n% Compute power spectrum\n\n% Create frequency axis (first half)\n\n% Find peak frequency and power\n\n% Display peak frequency\n\n% Display peak power (rounded to 1 decimal place)\n",
+      "solution": "Fs = 256;\nt = 0 : 1/Fs : 2 - 1/Fs;\nsignal = 2 * sin(2 * pi * 10 * t);\nY = fft(signal);\nN = length(signal);\npower = (abs(Y) .^ 2) / N;\nf = (0 : N-1) * (Fs / N);\nhalf = 1 : floor(N/2);\n[peak_power, peak_idx] = max(power(half));\npeak_freq = f(peak_idx);\ndisp(peak_freq)\ndisp(round(peak_power * 10) / 10)",
+      "hints": [
+        "Power spectrum is magnitude squared divided by N: Y = fft(signal); N = length(signal); power = (abs(Y) .^ 2) / N;",
+        "Frequency axis: f = (0:N-1) * (Fs/N); half = 1:floor(N/2); Then find the peak: [peak_power, peak_idx] = max(power(half));",
+        "Get peak frequency: peak_freq = f(peak_idx); Display: disp(peak_freq) then disp(round(peak_power * 10) / 10). Peak should be at 10 Hz with power 512.0."
+      ],
+      "test_cases": [
+        {
+          "expected_output": "10\n512\n"
+        }
+      ],
+      "requires_plot": false
+    },
+    {
+      "order_num": 3,
+      "title": "Identify dominant brain wave frequency",
+      "prompt": "A simulated EEG signal contains three brain wave components. Use the FFT to identify the DOMINANT (strongest) frequency.\n\nThe signal contains:\n- Theta at 6 Hz, amplitude 0.8\n- Alpha at 10 Hz, amplitude 2.5 (the dominant rhythm — this person is relaxed!)\n- Beta at 22 Hz, amplitude 0.4\n\n1. Create the composite signal (Fs = 256, duration = 2 seconds):\n   - `theta = 0.8 * sin(2 * pi * 6 * t);`\n   - `alpha = 2.5 * sin(2 * pi * 10 * t);`\n   - `beta = 0.4 * sin(2 * pi * 22 * t);`\n   - `eeg = theta + alpha + beta;`\n\n2. Compute the FFT magnitude spectrum (first half only)\n\n3. Find the peak frequency\n\n4. Display the dominant frequency using `disp(peak_freq)`\n\n5. Determine which brain wave band the dominant frequency belongs to and display it:\n   - If 4-8 Hz: `disp('theta')`\n   - If 8-13 Hz: `disp('alpha')`\n   - If 13-30 Hz: `disp('beta')`",
+      "starter_code": "% Parameters\nFs = 256;\nt = 0 : 1/Fs : 2 - 1/Fs;\n\n% Create brain wave components\n\n% Combine into EEG\n\n% Compute FFT and magnitude (first half)\n\n% Find dominant frequency\n\n% Display the dominant frequency\n\n% Display which band it belongs to\n",
+      "solution": "Fs = 256;\nt = 0 : 1/Fs : 2 - 1/Fs;\ntheta = 0.8 * sin(2 * pi * 6 * t);\nalpha = 2.5 * sin(2 * pi * 10 * t);\nbeta = 0.4 * sin(2 * pi * 22 * t);\neeg = theta + alpha + beta;\nY = fft(eeg);\nmagnitude = abs(Y);\nN = length(eeg);\nf = (0 : N-1) * (Fs / N);\nhalf = 1 : floor(N/2);\n[peak_val, peak_idx] = max(magnitude(half));\npeak_freq = f(peak_idx);\ndisp(peak_freq)\nif peak_freq >= 4 && peak_freq < 8\n    disp('theta')\nelseif peak_freq >= 8 && peak_freq <= 13\n    disp('alpha')\nelseif peak_freq > 13 && peak_freq <= 30\n    disp('beta')\nend",
+      "hints": [
+        "Create the components: theta = 0.8*sin(2*pi*6*t); alpha = 2.5*sin(2*pi*10*t); beta = 0.4*sin(2*pi*22*t); eeg = theta + alpha + beta;",
+        "FFT analysis: Y = fft(eeg); magnitude = abs(Y); N = length(eeg); f = (0:N-1)*(Fs/N); half = 1:floor(N/2); [peak_val, peak_idx] = max(magnitude(half)); peak_freq = f(peak_idx);",
+        "The dominant frequency should be 10 Hz (alpha has the highest amplitude). Use an if/elseif to check: if peak_freq >= 8 && peak_freq <= 13, disp('alpha'), end"
+      ],
+      "test_cases": [
+        {
+          "expected_output": "10\nalpha\n"
+        }
+      ],
+      "requires_plot": false
+    }
+  ]
+}

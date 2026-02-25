@@ -1,0 +1,61 @@
+{
+  "phase": 4,
+  "order_num": 2,
+  "title": "Spike Train Analysis",
+  "description": "Analyze neural spike data — calculate firing rates, inter-spike intervals, and create raster plots.",
+  "difficulty": "advanced",
+  "estimated_minutes": 40,
+  "content_md": "# Spike Train Analysis\n\nWhen a neuron \"fires,\" it produces a brief electrical pulse called an **action potential** or **spike**. By recording these spikes, neuroscientists can decode what the brain is computing.\n\nThis lesson is inspired by Mike X Cohen's approach to spike data analysis. We will work with the fundamental building blocks: spike times, firing rates, and inter-spike interval distributions.\n\n## What Is a Spike Train?\n\nA spike train is simply a **list of times** when a neuron produced an action potential:\n\n```matlab\n% Example: one neuron's spike times in seconds\nspike_times = [0.10, 0.25, 0.31, 0.58, 0.72, 0.89, 1.05];\n```\n\nFrom this simple list, we can extract surprisingly rich information about neural coding.\n\n## Firing Rate\n\nThe most basic measure of neural activity is the **firing rate** — how many spikes per second (measured in Hz).\n\n```matlab\n% Simple firing rate\nnum_spikes = length(spike_times);\nrecording_duration = max(spike_times) - min(spike_times);\nfiring_rate = num_spikes / recording_duration;  % in Hz\n```\n\nBut firing rate can change over time! To see this, we can compute **instantaneous firing rate** using time bins:\n\n```matlab\n% Binned firing rate\nbin_width = 0.1;  % 100 ms bins\nedges = 0:bin_width:max(spike_times);\ncounts = histc(spike_times, edges);\nfiring_rate_over_time = counts / bin_width;  % spikes/second in each bin\n```\n\n## Inter-Spike Intervals (ISI)\n\nThe **ISI** is the time between consecutive spikes. It reveals the neuron's temporal firing pattern.\n\n```matlab\nISI = diff(spike_times);  % differences between consecutive spike times\n```\n\nISI distributions tell us about the neuron:\n- **Regular firing:** narrow ISI distribution (like a metronome)\n- **Poisson firing:** exponential ISI distribution (random timing)\n- **Bursting:** bimodal ISI — short intervals within bursts, long intervals between bursts\n\n## Coefficient of Variation (CV)\n\nThe **CV of the ISI** is a key measure of firing regularity:\n\n```matlab\nCV = std(ISI) / mean(ISI);\n```\n\n- CV < 1: more regular than Poisson\n- CV = 1: Poisson-like (random)\n- CV > 1: more bursty than Poisson\n\n## Raster Plots\n\nA **raster plot** shows spike times for multiple neurons (or multiple trials). Each row is a neuron/trial, and each tick mark is a spike.\n\n```matlab\n% Simple raster for one neuron on one row\ny_pos = 1;  % row number\nfor s = 1:length(spike_times)\n  line([spike_times(s) spike_times(s)], [y_pos-0.4 y_pos+0.4], 'Color', 'k');\nend\n```\n\nRaster plots are one of the most common visualizations in systems neuroscience.\n\n## Peristimulus Time Histogram (PSTH)\n\nWhen you have multiple trials, you can align spikes to a stimulus event and build a **PSTH** — showing the average firing rate over time locked to the event. This reveals how neurons respond to stimuli.\n\nIn the exercises below, you will implement these analyses from scratch.",
+  "exercises": [
+    {
+      "order_num": 1,
+      "title": "Calculate firing rate from spike times",
+      "prompt": "Given simulated spike data from a neuron, calculate:\n1. The total number of spikes\n2. The overall firing rate (spikes / total recording duration)\n3. The binned firing rate using 500 ms bins over the full recording\n4. The peak binned firing rate (maximum across all bins)\n\nUse rng(42). Generate spikes using a Poisson process at 35 Hz for 10 seconds with dt = 0.001.\n\nDisplay: number of spikes, overall firing rate (1 decimal), and peak binned firing rate (1 decimal).",
+      "starter_code": "% Calculate firing rates from spike data\nrng(42);\n\n% Generate Poisson spike train\nfiring_rate_true = 35;  % Hz\nduration = 10;          % seconds\ndt = 0.001;\ntime_bins = 0:dt:duration-dt;\n\nspike_vector = rand(1, length(time_bins)) < (firing_rate_true * dt);\nspike_times = time_bins(spike_vector);\n\n% 1. Total number of spikes\n% YOUR CODE HERE\n\n% 2. Overall firing rate\n% YOUR CODE HERE\n\n% 3. Binned firing rate (500 ms bins)\nbin_width = 0.5;\n% YOUR CODE HERE\n\n% 4. Peak binned firing rate\n% YOUR CODE HERE\n\n% Display results\n% YOUR CODE HERE\n",
+      "solution": "rng(42);\n\nfiring_rate_true = 35;\nduration = 10;\ndt = 0.001;\ntime_bins = 0:dt:duration-dt;\n\nspike_vector = rand(1, length(time_bins)) < (firing_rate_true * dt);\nspike_times = time_bins(spike_vector);\n\nnum_spikes = length(spike_times);\noverall_rate = num_spikes / duration;\n\nbin_width = 0.5;\nedges = 0:bin_width:duration;\ncounts = histc(spike_times, edges);\ncounts = counts(1:end-1);\nbinned_rate = counts / bin_width;\n\npeak_rate = max(binned_rate);\n\ndisp(['Number of spikes: ' num2str(num_spikes)]);\ndisp(['Overall firing rate: ' num2str(round(overall_rate*10)/10) ' Hz']);\ndisp(['Peak binned firing rate: ' num2str(round(peak_rate*10)/10) ' Hz']);",
+      "hints": [
+        "Total spikes: num_spikes = length(spike_times). Overall rate: num_spikes / duration.",
+        "For binned rate: edges = 0:bin_width:duration; counts = histc(spike_times, edges); Remove the last bin edge: counts = counts(1:end-1); Then binned_rate = counts / bin_width;",
+        "Peak rate: peak_rate = max(binned_rate). Round to 1 decimal with round(value*10)/10."
+      ],
+      "test_cases": [
+        {
+          "expected_output": "Number of spikes: 341\nOverall firing rate: 34.1 Hz\nPeak binned firing rate: 48 Hz\n"
+        }
+      ],
+      "requires_plot": false
+    },
+    {
+      "order_num": 2,
+      "title": "Compute inter-spike intervals",
+      "prompt": "From the same spike train (rng(42), 35 Hz Poisson, 10 seconds, dt=0.001), compute the inter-spike interval (ISI) distribution.\n\nCalculate:\n1. The ISI vector (time between consecutive spikes)\n2. Mean ISI (in milliseconds, rounded to 2 decimal places)\n3. Standard deviation of ISI (in milliseconds, rounded to 2 decimal places)\n4. Coefficient of variation (CV = std/mean, rounded to 2 decimal places)\n5. The percentage of ISIs shorter than 10 ms (rounded to 1 decimal place)\n\nDisplay all five results.",
+      "starter_code": "% ISI analysis\nrng(42);\n\nfiring_rate_true = 35;\nduration = 10;\ndt = 0.001;\ntime_bins = 0:dt:duration-dt;\n\nspike_vector = rand(1, length(time_bins)) < (firing_rate_true * dt);\nspike_times = time_bins(spike_vector);\n\n% 1. Compute ISI\n% YOUR CODE HERE\n\n% 2. Mean ISI in ms\n% YOUR CODE HERE\n\n% 3. Std of ISI in ms\n% YOUR CODE HERE\n\n% 4. CV\n% YOUR CODE HERE\n\n% 5. Percentage of ISIs < 10 ms\n% YOUR CODE HERE\n\n% Display all results\n% YOUR CODE HERE\n",
+      "solution": "rng(42);\n\nfiring_rate_true = 35;\nduration = 10;\ndt = 0.001;\ntime_bins = 0:dt:duration-dt;\n\nspike_vector = rand(1, length(time_bins)) < (firing_rate_true * dt);\nspike_times = time_bins(spike_vector);\n\nISI = diff(spike_times);\n\nmean_isi_ms = mean(ISI) * 1000;\nstd_isi_ms = std(ISI) * 1000;\nCV = std(ISI) / mean(ISI);\npct_short = sum(ISI < 0.010) / length(ISI) * 100;\n\ndisp(['Mean ISI: ' num2str(round(mean_isi_ms*100)/100) ' ms']);\ndisp(['Std ISI: ' num2str(round(std_isi_ms*100)/100) ' ms']);\ndisp(['CV: ' num2str(round(CV*100)/100)]);\ndisp(['ISIs < 10ms: ' num2str(round(pct_short*10)/10) '%']);",
+      "hints": [
+        "ISI = diff(spike_times) gives you the time between consecutive spikes. Multiply by 1000 to convert seconds to milliseconds.",
+        "Mean and std: mean_isi_ms = mean(ISI) * 1000; std_isi_ms = std(ISI) * 1000; CV = std(ISI) / mean(ISI);",
+        "For percentage of short ISIs: pct_short = sum(ISI < 0.010) / length(ISI) * 100; Round to 2 decimals: round(value*100)/100."
+      ],
+      "test_cases": [
+        {
+          "expected_output": "Mean ISI: 29.35 ms\nStd ISI: 28.26 ms\nCV: 0.96\nISIs < 10ms: 27.6%\n"
+        }
+      ],
+      "requires_plot": false
+    },
+    {
+      "order_num": 3,
+      "title": "Create a raster plot of multiple neurons",
+      "prompt": "Simulate and plot spike trains for 8 neurons with different firing rates.\n\nUse rng(123). Create Poisson spike trains (dt = 0.001) for 3 seconds for 8 neurons with firing rates: [5, 10, 15, 20, 30, 40, 50, 60] Hz.\n\nCreate a raster plot where:\n- Each neuron is on a separate horizontal row (neuron 1 at top, neuron 8 at bottom)\n- Each spike is a short vertical tick mark\n- X-axis: 'Time (s)', Y-axis: 'Neuron'\n- Title: 'Raster Plot - 8 Neurons'\n- Set Y-axis ticks at 1 through 8",
+      "starter_code": "% Raster plot of 8 neurons\nrng(123);\n\nfiring_rates = [5, 10, 15, 20, 30, 40, 50, 60];\nduration = 3;\ndt = 0.001;\ntime_bins = 0:dt:duration-dt;\nnum_neurons = length(firing_rates);\n\nfigure;\nhold on;\n\nfor n = 1:num_neurons\n  % Generate spike train for this neuron\n  % YOUR CODE HERE\n\n  % Plot each spike as a vertical tick at row n\n  % YOUR CODE HERE\nend\n\n% Label the plot\n% YOUR CODE HERE\n\nhold off;\n",
+      "solution": "rng(123);\n\nfiring_rates = [5, 10, 15, 20, 30, 40, 50, 60];\nduration = 3;\ndt = 0.001;\ntime_bins = 0:dt:duration-dt;\nnum_neurons = length(firing_rates);\n\nfigure;\nhold on;\n\nfor n = 1:num_neurons\n  spike_vector = rand(1, length(time_bins)) < (firing_rates(n) * dt);\n  spike_times = time_bins(spike_vector);\n\n  for s = 1:length(spike_times)\n    line([spike_times(s) spike_times(s)], [n-0.4 n+0.4], 'Color', 'k');\n  end\nend\n\nxlabel('Time (s)');\nylabel('Neuron');\ntitle('Raster Plot - 8 Neurons');\nset(gca, 'YTick', 1:8);\nylim([0.5 8.5]);\nxlim([0 duration]);\nhold off;",
+      "hints": [
+        "Inside the loop, generate spikes for neuron n: spike_vector = rand(1, length(time_bins)) < (firing_rates(n) * dt); spike_times = time_bins(spike_vector);",
+        "Plot each spike as a vertical line at row n: for s = 1:length(spike_times)  line([spike_times(s) spike_times(s)], [n-0.4 n+0.4], 'Color', 'k'); end",
+        "After the loop: xlabel('Time (s)'); ylabel('Neuron'); title('Raster Plot - 8 Neurons'); set(gca, 'YTick', 1:8);"
+      ],
+      "test_cases": [],
+      "requires_plot": true
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "phase": 1,
+  "order_num": 4,
+  "title": "Control Flow",
+  "description": "Making decisions and repeating actions — using if/else, for loops, and while loops to process brain data.",
+  "difficulty": "beginner",
+  "estimated_minutes": 30,
+  "content_md": "# Control Flow\n\nSo far, our code has run line by line from top to bottom. But real neuroscience analysis needs **decisions** and **repetition**. Should we flag this signal as a spike? Should we process all 64 EEG channels? Control flow lets your code think and repeat.\n\n## If / Else: Making Decisions\n\nThe `if` statement checks whether something is true, and runs code only when it is:\n\n```matlab\nvoltage = 85;\n\nif voltage > 80\n    disp('Spike detected!')\nend\n```\n\nYou can add `else` for when the condition is false:\n\n```matlab\nvoltage = 45;\n\nif voltage > 80\n    disp('Spike detected!')\nelse\n    disp('No spike')\nend\n```\n\nAnd `elseif` for multiple conditions:\n\n```matlab\nvoltage = 65;\n\nif voltage > 80\n    disp('Strong spike')\nelseif voltage > 50\n    disp('Weak spike')\nelse\n    disp('No spike')\nend\n```\n\n### Comparison Operators\n| Operator | Meaning |\n|---|---|\n| `>` | Greater than |\n| `<` | Less than |\n| `>=` | Greater than or equal |\n| `<=` | Less than or equal |\n| `==` | Equal to (two equals signs!) |\n| `~=` | Not equal to |\n\n## For Loops: Repeating a Fixed Number of Times\n\nA `for` loop repeats code a set number of times. This is perfect for processing each EEG channel one by one:\n\n```matlab\nchannels = [12.3, 45.6, 78.9, 23.4];\n\nfor i = 1:length(channels)\n    disp(channels(i))\nend\n```\n\nThe variable `i` takes the values 1, 2, 3, 4 in turn. Each time through the loop, we do something with `channels(i)`.\n\nHere's a classic example — adding up numbers:\n\n```matlab\ndata = [10, 20, 30, 40];\ntotal = 0;\n\nfor i = 1:length(data)\n    total = total + data(i);\nend\n\ndisp(total)   % Shows 100\n```\n\n## While Loops: Repeating Until a Condition Changes\n\nA `while` loop keeps going as long as a condition is true. This is great for simulations — for example, a neuron accumulating charge until it fires:\n\n```matlab\nmembrane_potential = 0;\nthreshold = 70;\n\nwhile membrane_potential < threshold\n    membrane_potential = membrane_potential + 15;\nend\n\ndisp(membrane_potential)\n```\n\nBe careful with `while` loops! If the condition never becomes false, the loop runs forever (an \"infinite loop\"). Always make sure something inside the loop changes the condition.\n\n## Putting It Together\n\nHere's a real-world-style example — scanning EEG channels for spikes:\n\n```matlab\neeg_channels = [23, 91, 45, 88, 12, 67];\nspike_count = 0;\n\nfor i = 1:length(eeg_channels)\n    if eeg_channels(i) > 80\n        spike_count = spike_count + 1;\n    end\nend\n\ndisp(['Spikes found: ' num2str(spike_count)])\n```\n\n## Why This Matters\n\nWhen you analyze real brain data, you'll loop through thousands of time points across dozens of channels, checking thresholds and making decisions at every step. Control flow is the engine that powers all of that.",
+  "exercises": [
+    {
+      "order_num": 1,
+      "title": "Spike or no spike?",
+      "prompt": "A neuron fires (produces a \"spike\") when its voltage exceeds a threshold.\n\nGiven a signal value of 72 microvolts and a threshold of 65 microvolts, use an if/else statement to check:\n- If the signal is **greater than** the threshold, display: `Spike detected`\n- Otherwise, display: `No spike`",
+      "starter_code": "signal_value = 72;\nthreshold = 65;\n\n% Use if/else to check if signal_value exceeds threshold\n% Display 'Spike detected' or 'No spike'\n",
+      "solution": "signal_value = 72;\nthreshold = 65;\n\nif signal_value > threshold\n    disp('Spike detected')\nelse\n    disp('No spike')\nend",
+      "hints": [
+        "Start with: if signal_value > threshold",
+        "Inside the if block, use disp('Spike detected'). Add an else block with disp('No spike').",
+        "The full structure is: if signal_value > threshold ... disp('Spike detected') ... else ... disp('No spike') ... end"
+      ],
+      "test_cases": [
+        {
+          "expected_output": "Spike detected\n"
+        }
+      ],
+      "requires_plot": false
+    },
+    {
+      "order_num": 2,
+      "title": "Sum the brain signals",
+      "prompt": "You have voltage readings from 5 EEG time points:\n\n`readings = [12.5, 8.3, 15.1, 6.7, 9.4]`\n\nUse a `for` loop to calculate the sum of all values. Store the running total in a variable called `total` (start it at 0). After the loop, display the total using `disp`.\n\n(Yes, you could use the built-in `sum()` function — but the goal here is to practice loops!)",
+      "starter_code": "readings = [12.5, 8.3, 15.1, 6.7, 9.4];\ntotal = 0;\n\n% Use a for loop to add each reading to total\n\n\n% Display the total\n",
+      "solution": "readings = [12.5, 8.3, 15.1, 6.7, 9.4];\ntotal = 0;\n\nfor i = 1:length(readings)\n    total = total + readings(i);\nend\n\ndisp(total)",
+      "hints": [
+        "The loop should go from 1 to the length of the readings array: for i = 1:length(readings)",
+        "Inside the loop, add the current reading to total: total = total + readings(i);",
+        "After the loop ends, display the result: disp(total). The answer should be 52."
+      ],
+      "test_cases": [
+        {
+          "expected_output": "52\n"
+        }
+      ],
+      "requires_plot": false
+    },
+    {
+      "order_num": 3,
+      "title": "Neuron reaches firing threshold",
+      "prompt": "Simulate a simple neuron that accumulates charge over time. The neuron starts with a membrane potential of 0 mV and gains 18 mV on each time step. The firing threshold is 70 mV.\n\nUse a `while` loop to keep adding 18 to the membrane potential until it reaches or exceeds the threshold. Also count how many steps it takes (start a counter at 0 and increment it each loop iteration).\n\nAfter the loop, display the final membrane potential and then the number of steps, each on their own line using `disp`.",
+      "starter_code": "membrane_potential = 0;\nthreshold = 70;\nsteps = 0;\n\n% Use a while loop: keep adding 18 to membrane_potential\n% until it reaches or exceeds the threshold\n% Count each step\n\n\n% Display the final membrane potential\n\n% Display the number of steps\n",
+      "solution": "membrane_potential = 0;\nthreshold = 70;\nsteps = 0;\n\nwhile membrane_potential < threshold\n    membrane_potential = membrane_potential + 18;\n    steps = steps + 1;\nend\n\ndisp(membrane_potential)\ndisp(steps)",
+      "hints": [
+        "The while condition should be: while membrane_potential < threshold",
+        "Inside the loop, increase membrane_potential by 18 and increase steps by 1 each time.",
+        "After the loop: disp(membrane_potential) then disp(steps). The neuron reaches 72 mV in 4 steps."
+      ],
+      "test_cases": [
+        {
+          "expected_output": "72\n4\n"
+        }
+      ],
+      "requires_plot": false
+    }
+  ]
+}

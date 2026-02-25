@@ -1,0 +1,61 @@
+{
+  "phase": 4,
+  "order_num": 5,
+  "title": "Neural Modeling Basics",
+  "description": "Simulate how neurons work using the leaky integrate-and-fire model — a foundational computational neuroscience technique.",
+  "difficulty": "advanced",
+  "estimated_minutes": 40,
+  "content_md": "# Neural Modeling Basics\n\nSo far, we have been analyzing neural *data*. Now let's flip the perspective and **simulate neural activity from first principles**. This is the world of computational neuroscience.\n\nWhy model neurons? Because models let us test hypotheses about how the brain works. If your model of a neuron produces activity patterns that match real data, you have a candidate explanation for the underlying mechanism.\n\n## The Leaky Integrate-and-Fire (LIF) Neuron\n\nThe LIF model is the \"Hello, World!\" of computational neuroscience. It captures the essential behavior of a neuron:\n\n1. **Integrate:** The neuron accumulates input (like charge building up on a capacitor)\n2. **Leak:** Some charge constantly leaks away (the membrane is not a perfect insulator)\n3. **Fire:** When the voltage reaches a threshold, the neuron fires a spike\n4. **Reset:** After firing, the voltage resets to a resting value\n\n## The Math\n\nThe membrane potential V(t) evolves according to:\n\n```\ntau * dV/dt = -(V - V_rest) + R * I_input\n```\n\nWhere:\n- **tau** = membrane time constant (~10-20 ms) — how quickly voltage decays\n- **V_rest** = resting potential (~-70 mV) — voltage with no input\n- **R** = membrane resistance (~10 MOhm)\n- **I_input** = input current (nanoamps)\n\nWhen **V >= V_threshold** (about -55 mV), the neuron fires and V resets to V_rest.\n\n## Euler Method Simulation\n\nWe simulate this using the Euler method — stepping forward in small time increments:\n\n```matlab\ndt = 0.0001;  % 0.1 ms time step\nfor i = 2:num_steps\n  dV = (-(V(i-1) - V_rest) + R * I(i-1)) / tau;\n  V(i) = V(i-1) + dV * dt;\n\n  % Check for spike\n  if V(i) >= V_thresh\n    V(i) = V_rest;       % reset\n    spike_times = [spike_times, t(i)];\n  end\nend\n```\n\n## What Can the LIF Model Teach Us?\n\n### 1. Threshold Behavior\nBelow a critical input current, the neuron never fires. Above it, it fires regularly. This threshold is a fundamental property of neurons.\n\n### 2. F-I Curve\nThe relationship between input current (I) and firing rate (F) is called the **F-I curve**. For the LIF model, firing rate increases roughly linearly with current above threshold. Real neurons show more complex F-I curves.\n\n### 3. Refractory Period\nAfter firing, real neurons have a brief period where they cannot fire again. We can add this to the model.\n\n## Beyond LIF\n\nMore sophisticated models exist:\n- **Hodgkin-Huxley:** Biophysically detailed, models ion channels\n- **Izhikevich:** Computationally efficient but can reproduce many firing patterns\n- **AdEx (Adaptive Exponential):** Adds adaptation and exponential spike initiation\n\nBut the LIF model remains the workhorse for large-scale network simulations because of its simplicity.\n\n## Connection to Meditation Research\n\nNeural models can help explain *why* brain waves change during meditation. For example, if meditation modulates the input to cortical neurons (perhaps through thalamic gating), models can predict the resulting changes in oscillatory patterns. The alpha rhythm increase during meditation may arise from changes in thalamocortical loop dynamics — something that can be explored with networks of LIF neurons.",
+  "exercises": [
+    {
+      "order_num": 1,
+      "title": "Simulate a leaky integrate-and-fire neuron",
+      "prompt": "Implement a basic LIF neuron and simulate it for 1 second with a constant input current.\n\nParameters:\n- tau = 0.010 (10 ms membrane time constant)\n- V_rest = -70 mV\n- V_thresh = -55 mV\n- R = 10 MOhm\n- dt = 0.0001 (0.1 ms)\n- I_input = 2.0 nA (constant)\n- Duration = 1 second\n\nSteps:\n1. Create time vector and initialize V to V_rest at all time points\n2. Loop through time: update V using Euler method, check for threshold crossing, reset if spike\n3. Count the number of spikes\n4. Display: the number of spikes and the firing rate in Hz\n\nNo rng needed (deterministic simulation).",
+      "starter_code": "% Leaky Integrate-and-Fire neuron\ntau = 0.010;       % membrane time constant (s)\nV_rest = -70;      % resting potential (mV)\nV_thresh = -55;    % threshold (mV)\nR = 10;            % membrane resistance (MOhm)\ndt = 0.0001;       % time step (s)\nI_input = 2.0;     % input current (nA)\nduration = 1;      % simulation time (s)\n\nt = 0:dt:duration-dt;\nnum_steps = length(t);\n\n% Initialize membrane potential\nV = ones(1, num_steps) * V_rest;\nspike_count = 0;\n\n% Simulate\nfor i = 2:num_steps\n  % Update membrane potential (Euler method)\n  % YOUR CODE HERE\n\n  % Check for spike\n  % YOUR CODE HERE\nend\n\n% Display results\n% YOUR CODE HERE\n",
+      "solution": "tau = 0.010;\nV_rest = -70;\nV_thresh = -55;\nR = 10;\ndt = 0.0001;\nI_input = 2.0;\nduration = 1;\n\nt = 0:dt:duration-dt;\nnum_steps = length(t);\n\nV = ones(1, num_steps) * V_rest;\nspike_count = 0;\n\nfor i = 2:num_steps\n  dV = (-(V(i-1) - V_rest) + R * I_input) / tau;\n  V(i) = V(i-1) + dV * dt;\n\n  if V(i) >= V_thresh\n    V(i) = V_rest;\n    spike_count = spike_count + 1;\n  end\nend\n\nfiring_rate = spike_count / duration;\n\ndisp(['Number of spikes: ' num2str(spike_count)]);\ndisp(['Firing rate: ' num2str(firing_rate) ' Hz']);",
+      "hints": [
+        "The Euler update: dV = (-(V(i-1) - V_rest) + R * I_input) / tau; V(i) = V(i-1) + dV * dt;",
+        "Spike check: if V(i) >= V_thresh, then V(i) = V_rest; spike_count = spike_count + 1; end",
+        "Firing rate = spike_count / duration. Display with disp(['Number of spikes: ' num2str(spike_count)]);"
+      ],
+      "test_cases": [
+        {
+          "expected_output": "Number of spikes: 56\nFiring rate: 56 Hz\n"
+        }
+      ],
+      "requires_plot": false
+    },
+    {
+      "order_num": 2,
+      "title": "Vary input current and observe firing rate",
+      "prompt": "Compute the F-I curve (firing rate vs input current) for the LIF neuron.\n\nTest 9 input currents: I_values = [0.5, 1.0, 1.2, 1.5, 1.8, 2.0, 2.5, 3.0, 4.0] nA\n\nUse the same neuron parameters as Exercise 1 (tau=0.010, V_rest=-70, V_thresh=-55, R=10, dt=0.0001, duration=1).\n\nFor each current:\n1. Simulate the LIF neuron for 1 second\n2. Count spikes\n3. Record firing rate\n\nDisplay the current and firing rate for each value, one per line, in the format: 'I = X.X nA -> Y Hz'",
+      "starter_code": "% F-I curve for LIF neuron\ntau = 0.010;\nV_rest = -70;\nV_thresh = -55;\nR = 10;\ndt = 0.0001;\nduration = 1;\n\nI_values = [0.5, 1.0, 1.2, 1.5, 1.8, 2.0, 2.5, 3.0, 4.0];\nfiring_rates = zeros(1, length(I_values));\n\nt = 0:dt:duration-dt;\nnum_steps = length(t);\n\nfor idx = 1:length(I_values)\n  I_input = I_values(idx);\n  V = ones(1, num_steps) * V_rest;\n  spike_count = 0;\n\n  % Simulate\n  % YOUR CODE HERE\n\n  firing_rates(idx) = spike_count / duration;\nend\n\n% Display results\n% YOUR CODE HERE\n",
+      "solution": "tau = 0.010;\nV_rest = -70;\nV_thresh = -55;\nR = 10;\ndt = 0.0001;\nduration = 1;\n\nI_values = [0.5, 1.0, 1.2, 1.5, 1.8, 2.0, 2.5, 3.0, 4.0];\nfiring_rates = zeros(1, length(I_values));\n\nt = 0:dt:duration-dt;\nnum_steps = length(t);\n\nfor idx = 1:length(I_values)\n  I_input = I_values(idx);\n  V = ones(1, num_steps) * V_rest;\n  spike_count = 0;\n\n  for i = 2:num_steps\n    dV = (-(V(i-1) - V_rest) + R * I_input) / tau;\n    V(i) = V(i-1) + dV * dt;\n\n    if V(i) >= V_thresh\n      V(i) = V_rest;\n      spike_count = spike_count + 1;\n    end\n  end\n\n  firing_rates(idx) = spike_count / duration;\nend\n\nfor idx = 1:length(I_values)\n  disp(['I = ' num2str(I_values(idx), '%.1f') ' nA -> ' num2str(firing_rates(idx)) ' Hz']);\nend",
+      "hints": [
+        "The inner simulation loop is identical to Exercise 1. Just wrap it in an outer loop over I_values: for idx = 1:length(I_values) ... I_input = I_values(idx); ... end",
+        "For each current value, reset V and spike_count before simulating. V = ones(1, num_steps) * V_rest; spike_count = 0; Then run the Euler loop.",
+        "Display: for idx = 1:length(I_values)  disp(['I = ' num2str(I_values(idx), '%.1f') ' nA -> ' num2str(firing_rates(idx)) ' Hz']); end"
+      ],
+      "test_cases": [
+        {
+          "expected_output": "I = 0.5 nA -> 0 Hz\nI = 1.0 nA -> 0 Hz\nI = 1.2 nA -> 0 Hz\nI = 1.5 nA -> 0 Hz\nI = 1.8 nA -> 33 Hz\nI = 2.0 nA -> 56 Hz\nI = 2.5 nA -> 95 Hz\nI = 3.0 nA -> 126 Hz\nI = 4.0 nA -> 178 Hz\n"
+        }
+      ],
+      "requires_plot": false
+    },
+    {
+      "order_num": 3,
+      "title": "Plot membrane potential with spike resets",
+      "prompt": "Simulate a LIF neuron with I = 2.0 nA and create a detailed plot of the membrane potential over time, showing the characteristic sawtooth pattern of integrate-and-fire behavior.\n\nUse the same parameters (tau=0.010, V_rest=-70, V_thresh=-55, R=10, dt=0.0001, duration=0.2 seconds — shorter for a clearer plot).\n\nModification: When a spike occurs, briefly set V to +20 mV (to visually represent the spike) before resetting to V_rest. This means:\n- When V >= V_thresh: set V(i) = 20 (spike visualization), then on the next step it resets to V_rest.\n\nCreate a figure with:\n- Membrane potential vs time\n- A dashed red horizontal line at the threshold (-55 mV)\n- A dashed blue horizontal line at the resting potential (-70 mV)\n- X-axis: 'Time (s)', Y-axis: 'Membrane Potential (mV)'\n- Title: 'LIF Neuron Membrane Potential'\n- Legend with entries: 'V_m', 'Threshold', 'V_{rest}'",
+      "starter_code": "% Plot LIF membrane potential\ntau = 0.010;\nV_rest = -70;\nV_thresh = -55;\nR = 10;\ndt = 0.0001;\nI_input = 2.0;\nduration = 0.2;\n\nt = 0:dt:duration-dt;\nnum_steps = length(t);\n\nV = ones(1, num_steps) * V_rest;\n\nfor i = 2:num_steps\n  % Check if previous step was a spike (V = 20)\n  % YOUR CODE HERE\n\n  % Normal Euler update\n  % YOUR CODE HERE\n\n  % Spike detection with visual spike\n  % YOUR CODE HERE\nend\n\n% Create plot\nfigure;\n% YOUR CODE HERE\n",
+      "solution": "tau = 0.010;\nV_rest = -70;\nV_thresh = -55;\nR = 10;\ndt = 0.0001;\nI_input = 2.0;\nduration = 0.2;\n\nt = 0:dt:duration-dt;\nnum_steps = length(t);\n\nV = ones(1, num_steps) * V_rest;\n\nfor i = 2:num_steps\n  if V(i-1) == 20\n    V(i) = V_rest;\n  else\n    dV = (-(V(i-1) - V_rest) + R * I_input) / tau;\n    V(i) = V(i-1) + dV * dt;\n\n    if V(i) >= V_thresh\n      V(i) = 20;\n    end\n  end\nend\n\nfigure;\nplot(t, V, 'k', 'LineWidth', 1.2);\nhold on;\nplot([t(1) t(end)], [V_thresh V_thresh], 'r--', 'LineWidth', 1);\nplot([t(1) t(end)], [V_rest V_rest], 'b--', 'LineWidth', 1);\nhold off;\nxlabel('Time (s)');\nylabel('Membrane Potential (mV)');\ntitle('LIF Neuron Membrane Potential');\nlegend('V_m', 'Threshold', 'V_{rest}');\nylim([V_rest-5 30]);",
+      "hints": [
+        "After a spike (V(i-1) == 20), reset: V(i) = V_rest. Otherwise, do the normal Euler update. Then check if V(i) >= V_thresh and if so, set V(i) = 20.",
+        "Use if/else: if V(i-1) == 20, V(i) = V_rest; else, compute dV and update, then check threshold; end",
+        "For plotting: plot(t, V, 'k'); hold on; plot([t(1) t(end)], [V_thresh V_thresh], 'r--'); plot([t(1) t(end)], [V_rest V_rest], 'b--'); legend('V_m', 'Threshold', 'V_{rest}');"
+      ],
+      "test_cases": [],
+      "requires_plot": true
+    }
+  ]
+}

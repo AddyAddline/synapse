@@ -1,0 +1,65 @@
+{
+  "phase": 4,
+  "order_num": 1,
+  "title": "Intro to Neural Data",
+  "description": "Explore the main types of neuroscience data — EEG, fMRI, spike trains, and calcium imaging — and understand what they measure.",
+  "difficulty": "intermediate",
+  "estimated_minutes": 30,
+  "content_md": "# Intro to Neural Data\n\nWelcome to Phase 4! Everything you have learned so far — variables, matrices, plotting, filtering, spectral analysis — was building toward this moment. Now we apply those skills to **real neuroscience problems**.\n\nYour friend who studies meditation and yoga effects on the brain works with several types of neural data every day. Let's understand what those data types are and how they differ.\n\n## The Big Four: Types of Neural Recording\n\n### 1. EEG (Electroencephalography)\n- **What it measures:** Electrical voltages on the scalp produced by large populations of neurons firing together\n- **Temporal resolution:** Excellent — millisecond precision (typically 250-1000 Hz sampling)\n- **Spatial resolution:** Poor — each electrode picks up activity from millions of neurons\n- **Typical data shape:** channels x time points (e.g., 64 channels x 500,000 samples)\n- **Why it matters for meditation research:** EEG is the most common tool for studying brain waves during meditation. It is portable, relatively cheap, and captures the fast rhythms (alpha, theta) that change during mindful states.\n\n```matlab\n% A single EEG channel is just a time series of voltages\nfs = 256;             % sampling rate in Hz\nt = 0:1/fs:2;         % 2 seconds of time\neeg_signal = randn(1, length(t)) * 10;  % microvolts (simplified)\n```\n\n### 2. fMRI (Functional Magnetic Resonance Imaging)\n- **What it measures:** Blood-oxygen-level-dependent (BOLD) signal — an indirect measure of neural activity\n- **Temporal resolution:** Poor — one volume every 1-3 seconds\n- **Spatial resolution:** Excellent — millimeter precision in 3D\n- **Typical data shape:** 3D volume over time (e.g., 64x64x36 voxels x 200 time points)\n- **Why it matters:** fMRI can show which brain *regions* are active during meditation, but it cannot capture fast oscillations.\n\n### 3. Spike Trains\n- **What it measures:** Action potentials (spikes) from individual neurons, recorded with microelectrodes\n- **Temporal resolution:** Superb — sub-millisecond\n- **Spatial resolution:** Single neuron\n- **Typical data shape:** A list of spike times for each neuron\n- **Common in:** Animal research, some human clinical recordings\n\n```matlab\n% Spike train: just a list of times when a neuron fired\nspike_times = [0.05, 0.12, 0.31, 0.45, 0.52, 0.78, 0.91];\n```\n\n### 4. Calcium Imaging\n- **What it measures:** Fluorescence changes linked to intracellular calcium, which rises when neurons fire\n- **Temporal resolution:** Moderate (10-30 Hz typically)\n- **Spatial resolution:** Single neuron (can image hundreds simultaneously)\n- **Typical data shape:** neurons x time points (fluorescence traces)\n\n## Resolution Trade-offs\n\nThere is a fundamental trade-off in neuroscience:\n\n| Technique | Temporal Res. | Spatial Res. | Invasive? |\n|---|---|---|---|\n| EEG | ~1 ms | ~cm | No |\n| fMRI | ~1 s | ~mm | No |\n| Spikes | ~0.1 ms | Single neuron | Yes |\n| Calcium | ~30 ms | Single neuron | Yes |\n\nNo single technique gives you both high temporal AND high spatial resolution non-invasively. Researchers choose based on their question.\n\n## Working with Simulated Data\n\nSince we cannot load real data files in this environment, we will **simulate** realistic neural data. This is actually a critical skill — computational neuroscientists build simulated datasets all the time to test their analysis pipelines before applying them to real data.\n\n```matlab\n% Simulating data lets you control the ground truth\n% If you put a 10 Hz signal into simulated EEG,\n% your analysis SHOULD find a 10 Hz peak!\n```\n\nIn the exercises below, you will create each type of data from scratch.",
+  "exercises": [
+    {
+      "order_num": 1,
+      "title": "Create simulated spike train data",
+      "prompt": "Simulate spike train data for a neuron firing at approximately 20 Hz (20 spikes per second) over a 5-second recording.\n\nUse a Poisson process: at each 1 ms time bin, the probability of a spike is firing_rate * dt.\n\nSteps:\n1. Set the firing rate to 20 Hz and duration to 5 seconds\n2. Create time bins of 1 ms (dt = 0.001)\n3. Use rand to generate random numbers and compare to (firing_rate * dt) to determine spikes\n4. Extract spike times from the binary spike vector\n5. Display the number of spikes and the measured firing rate (num_spikes / duration)\n\nUse rng(42) for reproducibility.",
+      "starter_code": "% Simulate a Poisson spike train\nrng(42);\n\nfiring_rate = 20;  % Hz\nduration = 5;      % seconds\ndt = 0.001;        % 1 ms bins\n\n% Create time vector\ntime_bins = 0:dt:duration-dt;\n\n% Generate spikes: random number < firing_rate*dt means a spike\n% YOUR CODE HERE\n\n% Extract spike times (times where spikes occurred)\n% YOUR CODE HERE\n\n% Display results\n% YOUR CODE HERE\n",
+      "solution": "rng(42);\n\nfiring_rate = 20;\nduration = 5;\ndt = 0.001;\n\ntime_bins = 0:dt:duration-dt;\n\nspike_vector = rand(1, length(time_bins)) < (firing_rate * dt);\n\nspike_times = time_bins(spike_vector);\n\nnum_spikes = length(spike_times);\nmeasured_rate = num_spikes / duration;\n\ndisp(['Number of spikes: ' num2str(num_spikes)]);\ndisp(['Measured firing rate: ' num2str(measured_rate) ' Hz']);",
+      "hints": [
+        "A Poisson spike train: generate a random number for each time bin using rand(1, length(time_bins)). If the random number is less than firing_rate * dt, that bin has a spike.",
+        "Create a logical vector: spike_vector = rand(1, length(time_bins)) < (firing_rate * dt); Then get spike times: spike_times = time_bins(spike_vector);",
+        "Count spikes with length(spike_times) and divide by duration to get the measured rate. Display with disp(['Number of spikes: ' num2str(num_spikes)]);"
+      ],
+      "test_cases": [
+        {
+          "expected_output": "Number of spikes: 94\nMeasured firing rate: 18.8 Hz\n"
+        }
+      ],
+      "requires_plot": false
+    },
+    {
+      "order_num": 2,
+      "title": "Simulate a basic EEG-like signal",
+      "prompt": "Create a simulated EEG signal that contains three frequency components commonly found in brain recordings:\n- Alpha waves: 10 Hz, amplitude 20 microvolts\n- Beta waves: 22 Hz, amplitude 8 microvolts\n- Theta waves: 6 Hz, amplitude 15 microvolts\n\nPlus random noise with standard deviation of 5 microvolts.\n\nSteps:\n1. Set sampling rate to 256 Hz, duration to 2 seconds\n2. Create the time vector\n3. Build each sine component and add them together with noise\n4. Display the total number of samples, the min voltage (rounded to 1 decimal), and the max voltage (rounded to 1 decimal)\n\nUse rng(10) for reproducibility.",
+      "starter_code": "% Simulate multi-component EEG signal\nrng(10);\n\nfs = 256;           % sampling rate (Hz)\nduration = 2;       % seconds\nt = 0:1/fs:duration-1/fs;\n\n% Create frequency components\n% Alpha (10 Hz, amplitude 20 uV)\n% Beta (22 Hz, amplitude 8 uV)\n% Theta (6 Hz, amplitude 15 uV)\n% YOUR CODE HERE\n\n% Add noise (std = 5 uV)\n% YOUR CODE HERE\n\n% Combine into final EEG signal\n% YOUR CODE HERE\n\n% Display properties\n% YOUR CODE HERE\n",
+      "solution": "rng(10);\n\nfs = 256;\nduration = 2;\nt = 0:1/fs:duration-1/fs;\n\nalpha = 20 * sin(2 * pi * 10 * t);\nbeta = 8 * sin(2 * pi * 22 * t);\ntheta = 15 * sin(2 * pi * 6 * t);\n\nnoise = 5 * randn(1, length(t));\n\neeg_signal = alpha + beta + theta + noise;\n\ndisp(['Total samples: ' num2str(length(eeg_signal))]);\ndisp(['Min voltage: ' num2str(round(min(eeg_signal)*10)/10) ' uV']);\ndisp(['Max voltage: ' num2str(round(max(eeg_signal)*10)/10) ' uV']);",
+      "hints": [
+        "Each sine component follows the pattern: amplitude * sin(2 * pi * frequency * t). For example, alpha = 20 * sin(2 * pi * 10 * t);",
+        "Generate noise with randn: noise = 5 * randn(1, length(t)); Then combine: eeg_signal = alpha + beta + theta + noise;",
+        "For rounding to 1 decimal: round(value*10)/10. Display with disp(['Min voltage: ' num2str(round(min(eeg_signal)*10)/10) ' uV']);"
+      ],
+      "test_cases": [
+        {
+          "expected_output": "Total samples: 512\nMin voltage: -45.2 uV\nMax voltage: 42.5 uV\n"
+        }
+      ],
+      "requires_plot": false
+    },
+    {
+      "order_num": 3,
+      "title": "Compare recording technique properties",
+      "prompt": "Create a summary of four neural recording techniques by calculating key properties.\n\nFor each technique, compute:\n- Number of time points in a 10-second recording at its typical sampling rate\n- Data size: time_points * num_channels (approximate number of data values)\n\nUse these parameters:\n- EEG: 256 Hz, 64 channels\n- fMRI: 0.5 Hz (1 volume every 2 seconds), 50000 voxels (approximate)\n- Spikes: 30000 Hz, 4 electrodes\n- Calcium: 30 Hz, 200 neurons\n\nDisplay the technique name, number of time points, and total data values for each.",
+      "starter_code": "% Compare neural recording techniques\nrecording_duration = 10;  % seconds\n\n% Define technique parameters: [sampling_rate, num_channels]\n% YOUR CODE HERE\n\n% Calculate and display for each technique\n% YOUR CODE HERE\n",
+      "solution": "recording_duration = 10;\n\ntechniques = {'EEG', 'fMRI', 'Spikes', 'Calcium'};\nsampling_rates = [256, 0.5, 30000, 30];\nnum_channels = [64, 50000, 4, 200];\n\nfor i = 1:4\n  time_points = recording_duration * sampling_rates(i);\n  data_values = time_points * num_channels(i);\n  disp([techniques{i} ': ' num2str(time_points) ' time points, ' num2str(data_values) ' total values']);\nend",
+      "hints": [
+        "Number of time points = duration * sampling_rate. For EEG: 10 * 256 = 2560. Total data values = time_points * num_channels.",
+        "Store parameters in arrays: sampling_rates = [256, 0.5, 30000, 30]; num_channels = [64, 50000, 4, 200]; Use a cell array for names: techniques = {'EEG', 'fMRI', 'Spikes', 'Calcium'};",
+        "Loop through each technique: for i = 1:4 ... end. Inside compute time_points = recording_duration * sampling_rates(i); data_values = time_points * num_channels(i); then disp."
+      ],
+      "test_cases": [
+        {
+          "expected_output": "EEG: 2560 time points, 163840 total values\nfMRI: 5 time points, 250000 total values\nSpikes: 300000 time points, 1200000 total values\nCalcium: 300 time points, 60000 total values\n"
+        }
+      ],
+      "requires_plot": false
+    }
+  ]
+}

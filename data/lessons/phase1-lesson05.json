@@ -1,0 +1,65 @@
+{
+  "phase": 1,
+  "order_num": 5,
+  "title": "Functions",
+  "description": "Writing reusable functions to organize your brain data analysis — inputs, outputs, and built-in helpers.",
+  "difficulty": "beginner",
+  "estimated_minutes": 30,
+  "content_md": "# Functions\n\nAs your neuroscience analysis grows, you'll find yourself repeating the same calculations over and over — converting units, computing averages, counting spikes. **Functions** let you write that code once and reuse it anywhere.\n\n## What Is a Function?\n\nA function is like a little machine: you give it **inputs**, it does some work, and it gives you **outputs**.\n\nYou've already used built-in functions:\n```matlab\nmean([1, 2, 3, 4])   % Input: an array. Output: 2.5\nlength([10, 20, 30])  % Input: an array. Output: 3\n```\n\nNow you'll learn to write your own!\n\n## Writing Your Own Functions\n\nIn Octave, you can define a function right inside your script. The function definition must come **before** you call it. Here's the basic structure:\n\n```matlab\nfunction output = function_name(input)\n    % code that computes something\n    output = ...;\nend\n```\n\nLet's write a function that converts degrees Celsius to Fahrenheit:\n\n```matlab\nfunction f = celsius_to_fahrenheit(c)\n    f = c * 9/5 + 32;\nend\n\n% Now use it\nresult = celsius_to_fahrenheit(37);\ndisp(result)   % Shows 98.6\n```\n\n## Multiple Outputs\n\nA function can return more than one value using square brackets:\n\n```matlab\nfunction [mn, mx] = min_max(data)\n    mn = min(data);\n    mx = max(data);\nend\n\n% Call it\n[lo, hi] = min_max([3, 7, 1, 9, 4]);\ndisp(lo)   % 1\ndisp(hi)   % 9\n```\n\n## Multiple Inputs\n\nFunctions can take as many inputs as you need:\n\n```matlab\nfunction rate = firing_rate(spike_count, duration_seconds)\n    rate = spike_count / duration_seconds;\nend\n\nr = firing_rate(150, 10);\ndisp(r)   % 15 spikes per second\n```\n\n## Useful Built-in Functions for Neuroscience\n\nMATLAB/Octave comes with hundreds of built-in functions. Here are some you'll use often:\n\n| Function | What it does | Example |\n|---|---|---|\n| `mean(x)` | Average | `mean([2, 4, 6])` = 4 |\n| `std(x)` | Standard deviation | `std([2, 4, 6])` = 2 |\n| `max(x)` | Largest value | `max([2, 4, 6])` = 6 |\n| `min(x)` | Smallest value | `min([2, 4, 6])` = 2 |\n| `abs(x)` | Absolute value | `abs(-5)` = 5 |\n| `sqrt(x)` | Square root | `sqrt(16)` = 4 |\n| `round(x)` | Round to nearest integer | `round(3.7)` = 4 |\n| `num2str(x)` | Number to text | `num2str(42)` = '42' |\n\n## Important Rules\n\n1. **Function definition goes at the top** of your script (before any calling code)\n2. Variables inside a function are **local** — they don't affect variables outside\n3. Give your functions **descriptive names** like `calculate_firing_rate` rather than `f1`\n\n## Why This Matters\n\nIn a real EEG study, you might write functions like `filter_signal()`, `detect_spikes()`, `compute_power_spectrum()`, and `plot_eeg_channel()`. Each one handles a specific job, keeping your analysis clean and organized. Functions are the building blocks of every serious neuroscience analysis pipeline.",
+  "exercises": [
+    {
+      "order_num": 1,
+      "title": "Convert microvolts to millivolts",
+      "prompt": "EEG data is often recorded in microvolts (uV) but sometimes needs to be in millivolts (mV). There are 1000 microvolts in 1 millivolt.\n\nWrite a function called `uv_to_mv` that takes a value in microvolts and returns the value in millivolts (divide by 1000).\n\nThen use your function to convert 4500 microvolts to millivolts and display the result.",
+      "starter_code": "% Define your function here\n\n\n% Convert 4500 microvolts and display the result\n",
+      "solution": "function mv = uv_to_mv(uv)\n    mv = uv / 1000;\nend\n\nresult = uv_to_mv(4500);\ndisp(result)",
+      "hints": [
+        "Start with: function mv = uv_to_mv(uv) and end with: end",
+        "Inside the function, divide the input by 1000: mv = uv / 1000;",
+        "After the function definition, call it: result = uv_to_mv(4500); disp(result)"
+      ],
+      "test_cases": [
+        {
+          "expected_output": "4.5000\n"
+        }
+      ],
+      "requires_plot": false
+    },
+    {
+      "order_num": 2,
+      "title": "Signal statistics function",
+      "prompt": "Write a function called `signal_stats` that takes an array of signal values and returns **two** outputs: the mean and the standard deviation.\n\nThen call your function with this EEG data:\n`data = [2.1, 3.5, 1.8, 4.2, 3.0, 2.7]`\n\nDisplay the mean on the first line and the standard deviation on the second line using `disp`.\n\nHint: Use the built-in `mean()` and `std()` functions inside your function.",
+      "starter_code": "% Define your function with two outputs here\n\n\n% Call it with the data and display both results\ndata = [2.1, 3.5, 1.8, 4.2, 3.0, 2.7];\n",
+      "solution": "function [m, s] = signal_stats(signal)\n    m = mean(signal);\n    s = std(signal);\nend\n\ndata = [2.1, 3.5, 1.8, 4.2, 3.0, 2.7];\n[m, s] = signal_stats(data);\ndisp(m)\ndisp(s)",
+      "hints": [
+        "For multiple outputs, use square brackets: function [m, s] = signal_stats(signal)",
+        "Inside the function: m = mean(signal); and s = std(signal);",
+        "Call it with: [m, s] = signal_stats(data); then disp(m) and disp(s)"
+      ],
+      "test_cases": [
+        {
+          "expected_output": "2.8833\n0.8886\n"
+        }
+      ],
+      "requires_plot": false
+    },
+    {
+      "order_num": 3,
+      "title": "Calculate firing rate",
+      "prompt": "A neuron's **firing rate** is the number of spikes divided by the recording duration (in seconds). The result is in Hz (spikes per second).\n\nWrite a function called `calc_firing_rate` that takes two inputs:\n1. `spike_count` — number of spikes observed\n2. `duration` — recording duration in seconds\n\nThe function should return the firing rate.\n\nThen use it: a neuron fired 42 spikes in 3 seconds. Display the firing rate.",
+      "starter_code": "% Define the firing rate function here\n\n\n% Calculate the firing rate for 42 spikes in 3 seconds\n% Display the result\n",
+      "solution": "function rate = calc_firing_rate(spike_count, duration)\n    rate = spike_count / duration;\nend\n\nresult = calc_firing_rate(42, 3);\ndisp(result)",
+      "hints": [
+        "Start with: function rate = calc_firing_rate(spike_count, duration)",
+        "Inside the function: rate = spike_count / duration;",
+        "Call it: result = calc_firing_rate(42, 3); disp(result). The answer should be 14."
+      ],
+      "test_cases": [
+        {
+          "expected_output": "14\n"
+        }
+      ],
+      "requires_plot": false
+    }
+  ]
+}
