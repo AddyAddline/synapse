@@ -84,7 +84,7 @@ figure("visible", "off");
 ${code}
 print("/tmp/output.png", "-dpng", "-S640,480");
 fid = fopen("/tmp/output.png", "rb");
-raw = fread(fid, Inf, "uint8");
+raw = fread(fid, Inf, "uint8=>uint8");
 fclose(fid);
 b64 = base64_encode(raw);
 disp("__PLOT_BASE64_START__");
