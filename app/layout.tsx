@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { DM_Sans, JetBrains_Mono, Instrument_Serif } from 'next/font/google'
 import './globals.css'
+import 'highlight.js/styles/github-dark.css'
 
 const dmSans = DM_Sans({ subsets: ['latin'], variable: '--font-sans' })
 const instrumentSerif = Instrument_Serif({

@@ -43,6 +43,24 @@ describe('Judge0 Client', () => {
       expect(validateCode('pkg install signal')).toContain('forbidden')
     })
 
+    it('allows loading datasets from the neuroscience data path', () => {
+      expect(
+        validateCode("data = load('/usr/share/neuroscience-data/spike_data.mat');")
+      ).toBeNull()
+      expect(
+        validateCode("NEURO_DATA = '/usr/share/neuroscience-data';\ndata = load([NEURO_DATA '/ssvep_data.mat']);")
+      ).toBeNull()
+    })
+
+    it('blocks directory traversal in load()', () => {
+      expect(
+        validateCode("load('../../etc/passwd')")
+      ).toContain('forbidden')
+      expect(
+        validateCode("load('../../../etc/shadow')")
+      ).toContain('forbidden')
+    })
+
     it('allows normal code with math operations', () => {
       const code = `
         x = linspace(0, 2*pi, 100);

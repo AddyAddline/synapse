@@ -1,0 +1,53 @@
+{
+  "phase": 5,
+  "order_num": 1,
+  "title": "Exploring Real Spike Data",
+  "description": "Load actual macaque V1 spike recordings and explore neural firing patterns in real data.",
+  "difficulty": "advanced",
+  "estimated_minutes": 40,
+  "content_md": "# Exploring Real Spike Data\n\nWelcome to **Phase 5** — you are now working with **real neuroscience data**!\n\nEvery previous lesson used simulated data. That was essential for learning, because you knew exactly what signals were in the data. But real data is messy, surprising, and far more interesting.\n\n## The Dataset\n\nThe file `spike_data.mat` contains multi-unit spike recordings from a **Utah electrode array** implanted in macaque primary visual cortex (V1). This is the same type of data used in cutting-edge brain-computer interface research.\n\nThe dataset comes from Mike X Cohen's *Analyzing Neural Time Series Data* course materials.\n\n## What is a Utah Array?\n\nA Utah array is a 10×10 grid of tiny electrodes (each ~1mm long) that gets surgically implanted on the surface of the brain. Each electrode records the electrical activity of one or a few nearby neurons.\n\nWhen a neuron fires an **action potential** (or \"spike\"), the electrode picks up a brief voltage deflection (~1ms duration). By detecting these spikes, we can study how neurons encode information.\n\n## Loading .mat Files\n\nIn these exercises, the datasets are pre-installed on the server at a known path. You load them like this:\n\n```matlab\nNEURO_DATA = '/usr/share/neuroscience-data';\ndata = load([NEURO_DATA '/spike_data.mat']);\n```\n\nThe `load()` function reads the `.mat` file and returns a struct with the variables stored inside. Use `fieldnames(data)` to see what is in the struct.\n\n## Working with Structs\n\nRemember: when you load a .mat file, the result is a **struct**. Access fields with dot notation:\n\n```matlab\ndata = load('file.mat');\ndata.fieldName    % access a field\nsize(data.fieldName)  % check dimensions\n```\n\n## Tips for Real Data\n\n- Always inspect the data first (`size`, `fieldnames`, `whos`)\n- Real data will not look as clean as simulated data\n- Check for NaN or Inf values\n- Look at the range and distribution before analysis\n\nLet's dive in!",
+  "exercises": [
+    {
+      "order_num": 1,
+      "title": "Load and inspect spike data",
+      "prompt": "Load the spike dataset and explore its structure.\n\n1. Set the data path: NEURO_DATA = '/usr/share/neuroscience-data';\n2. Load spike_data.mat into a variable called `data`\n3. Display the field names of the loaded struct using `fieldnames(data)`\n4. For each field, display its name and size using a loop:\n   - Format: disp([name ': ' num2str(size(value))])\n5. Display the total number of fields: disp(['Total fields: ' num2str(length(fieldnames(data)))])",
+      "starter_code": "% Load and inspect real spike data\nNEURO_DATA = '/usr/share/neuroscience-data';\n\n% Load the data\n% YOUR CODE HERE\n\n% Display field names\n% YOUR CODE HERE\n\n% Loop through fields and show sizes\n% YOUR CODE HERE\n\n% Display total number of fields\n% YOUR CODE HERE\n",
+      "solution": "NEURO_DATA = '/usr/share/neuroscience-data';\ndata = load([NEURO_DATA '/spike_data.mat']);\n\nfnames = fieldnames(data);\ndisp('Field names:');\ndisp(fnames);\n\nfor i = 1:length(fnames)\n  name = fnames{i};\n  value = data.(name);\n  disp([name ': ' num2str(size(value))]);\nend\n\ndisp(['Total fields: ' num2str(length(fnames))]);",
+      "hints": [
+        "Use load([NEURO_DATA '/spike_data.mat']) to load the file into a struct.",
+        "Use fieldnames(data) to get a cell array of field names.",
+        "Loop with: for i = 1:length(fnames), name = fnames{i}; value = data.(name); end"
+      ],
+      "test_cases": [],
+      "requires_plot": false
+    },
+    {
+      "order_num": 2,
+      "title": "Compute firing rates across trials",
+      "prompt": "Analyze spike counts to compute firing rates from the real data.\n\nAfter loading the data, you will find spike timing information. For this exercise, we will work with whatever spike count or timing data is available in the struct.\n\n1. Load spike_data.mat\n2. Get the field names and display them\n3. Pick the first numeric matrix field (the largest one by number of elements)\n4. Display its size\n5. Compute the mean across the first dimension (averaging across trials/rows)\n6. Display the first 10 values of the mean: disp(mean_vals(1:min(10,end)))\n7. Display the overall mean: disp(['Overall mean: ' num2str(mean(mean_vals))])\n8. Display the standard deviation: disp(['Std dev: ' num2str(std(mean_vals))])",
+      "starter_code": "% Compute firing rates from real spike data\nNEURO_DATA = '/usr/share/neuroscience-data';\ndata = load([NEURO_DATA '/spike_data.mat']);\n\n% Get field names\nfnames = fieldnames(data);\ndisp('Available fields:');\ndisp(fnames);\n\n% Find the largest numeric field\n% YOUR CODE HERE\n\n% Compute mean across first dimension\n% YOUR CODE HERE\n\n% Display first 10 mean values\n% YOUR CODE HERE\n\n% Display overall statistics\n% YOUR CODE HERE\n",
+      "solution": "NEURO_DATA = '/usr/share/neuroscience-data';\ndata = load([NEURO_DATA '/spike_data.mat']);\n\nfnames = fieldnames(data);\ndisp('Available fields:');\ndisp(fnames);\n\nmax_numel = 0;\nlargest_field = '';\nfor i = 1:length(fnames)\n  val = data.(fnames{i});\n  if isnumeric(val) && numel(val) > max_numel\n    max_numel = numel(val);\n    largest_field = fnames{i};\n  end\nend\n\ndisp(['Largest field: ' largest_field]);\nspike_matrix = data.(largest_field);\ndisp(['Size: ' num2str(size(spike_matrix))]);\n\nmean_vals = mean(spike_matrix, 1);\ndisp('First 10 mean values:');\ndisp(mean_vals(1:min(10,end)));\n\ndisp(['Overall mean: ' num2str(mean(mean_vals))]);\ndisp(['Std dev: ' num2str(std(mean_vals))]);",
+      "hints": [
+        "Loop through fields with isnumeric() and numel() to find the largest matrix.",
+        "Use data.(fieldname) with dynamic field names to access struct fields.",
+        "mean(matrix, 1) computes the mean along rows (across trials)."
+      ],
+      "test_cases": [],
+      "requires_plot": false
+    },
+    {
+      "order_num": 3,
+      "title": "Plot a neural tuning curve",
+      "prompt": "Create a visualization of the spike data — a tuning curve or firing rate profile.\n\n1. Load spike_data.mat\n2. Find the largest numeric matrix in the struct (same approach as Exercise 2)\n3. Compute the mean across the first dimension\n4. Compute the standard error of the mean: SEM = std(matrix, 0, 1) / sqrt(size(matrix, 1))\n5. Create a figure with 2 subplots (2 rows, 1 column):\n   - Top: Plot the mean firing rate profile. Title: 'Mean Neural Response Profile'. xlabel: 'Time/Condition Index'. ylabel: 'Mean Response'.\n   - Bottom: Plot the mean with error bars using errorbar(). Title: 'Response with SEM Error Bars'. Same axis labels.\n6. Main title: 'Real Spike Data Analysis'",
+      "starter_code": "% Plot neural tuning curve from real data\nNEURO_DATA = '/usr/share/neuroscience-data';\ndata = load([NEURO_DATA '/spike_data.mat']);\n\n% Find largest numeric field\nfnames = fieldnames(data);\nmax_numel = 0;\nlargest_field = '';\nfor i = 1:length(fnames)\n  val = data.(fnames{i});\n  if isnumeric(val) && numel(val) > max_numel\n    max_numel = numel(val);\n    largest_field = fnames{i};\n  end\nend\n\nspike_matrix = data.(largest_field);\n\n% Compute mean and SEM\n% YOUR CODE HERE\n\n% Create figure\nfigure;\n% YOUR CODE HERE\n",
+      "solution": "NEURO_DATA = '/usr/share/neuroscience-data';\ndata = load([NEURO_DATA '/spike_data.mat']);\n\nfnames = fieldnames(data);\nmax_numel = 0;\nlargest_field = '';\nfor i = 1:length(fnames)\n  val = data.(fnames{i});\n  if isnumeric(val) && numel(val) > max_numel\n    max_numel = numel(val);\n    largest_field = fnames{i};\n  end\nend\n\nspike_matrix = data.(largest_field);\n\nmean_vals = mean(spike_matrix, 1);\nsem_vals = std(spike_matrix, 0, 1) / sqrt(size(spike_matrix, 1));\nx = 1:length(mean_vals);\n\nfigure;\n\nsubplot(2,1,1);\nplot(x, mean_vals, 'b-', 'LineWidth', 1.5);\nxlabel('Time/Condition Index');\nylabel('Mean Response');\ntitle('Mean Neural Response Profile');\n\nsubplot(2,1,2);\nerrorbar(x, mean_vals, sem_vals, 'r-', 'LineWidth', 1);\nxlabel('Time/Condition Index');\nylabel('Mean Response');\ntitle('Response with SEM Error Bars');\n\nsgtitle('Real Spike Data Analysis');",
+      "hints": [
+        "SEM = std(matrix, 0, 1) / sqrt(size(matrix, 1)) — the 0 means default normalization (N-1).",
+        "errorbar(x, y, err) plots y vs x with vertical error bars of size err.",
+        "Use sgtitle('...') for the overall figure title."
+      ],
+      "test_cases": [],
+      "requires_plot": true
+    }
+  ]
+}

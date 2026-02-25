@@ -17,6 +17,7 @@ const PHASE_LABELS: Record<number, { label: string; color: 'brand' | 'neuro' | '
   2: { label: 'Data & Plotting', color: 'neuro' },
   3: { label: 'Signal Processing', color: 'amber' },
   4: { label: 'Neuroscience', color: 'brand' },
+  5: { label: 'Real Data', color: 'brand' },
 }
 
 interface Lesson {

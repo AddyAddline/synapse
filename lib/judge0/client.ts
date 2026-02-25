@@ -3,10 +3,11 @@ const JUDGE0_API_URL =
 const JUDGE0_API_KEY = process.env.JUDGE0_API_KEY || ''
 
 // Octave language ID in Judge0 CE
-export const OCTAVE_LANGUAGE_ID = 32
+// Hosted Sulu API uses 32, self-hosted latest uses 66
+export const OCTAVE_LANGUAGE_ID = Number(process.env.JUDGE0_OCTAVE_LANG_ID) || 32
 
 const MAX_CODE_LENGTH = 10000
-const EXECUTION_TIMEOUT_SECONDS = 10
+const EXECUTION_TIMEOUT_SECONDS = 15
 const MAX_POLL_ATTEMPTS = 20
 const POLL_INTERVAL_MS = 500
 
@@ -19,6 +20,7 @@ const FORBIDDEN_PATTERNS = [
   /\bpython\s*\(/,
   /\bjava\s*\(/,
   /\bfopen\s*\(.*(\/etc|\/proc|\/sys)/,
+  /\bload\s*\(.*\.\.\//,  // Block directory traversal in load()
   /\bdelete\s*\(/,
   /\brmdir\s*\(/,
   /\bpkg\s+(install|uninstall)/,
@@ -108,7 +110,7 @@ export async function submitCode(
       language_id: OCTAVE_LANGUAGE_ID,
       cpu_time_limit: EXECUTION_TIMEOUT_SECONDS,
       wall_time_limit: EXECUTION_TIMEOUT_SECONDS * 2,
-      memory_limit: 128000, // 128 MB
+      memory_limit: 256000, // 256 MB — needed for loading .mat datasets
     }),
   })
 

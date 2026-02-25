@@ -1,0 +1,62 @@
+version: '3.8'
+
+x-judge0-common: &judge0-common
+  image: judge0-custom:latest
+  build:
+    context: .
+    dockerfile: Dockerfile.judge0-custom
+  volumes:
+    - ./judge0.conf:/judge0.conf:ro
+  privileged: true
+  restart: unless-stopped
+
+services:
+  server:
+    <<: *judge0-common
+    ports:
+      - "2358:2358"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    <<: *judge0-common
+    command: ["./scripts/workers"]
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: judge0
+      POSTGRES_USER: judge0
+      POSTGRES_PASSWORD: judge0_db_password_change_me
+    volumes:
+      - judge0-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U judge0"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --requirepass judge0_redis_password_change_me
+    volumes:
+      - judge0-redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "judge0_redis_password_change_me", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  judge0-db:
+  judge0-redis:

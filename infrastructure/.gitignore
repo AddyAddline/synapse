@@ -1,0 +1,3 @@
+# Downloaded neuroscience datasets (binary, fetched at deploy time)
+datasets/*.mat
+datasets/

@@ -1,0 +1,5 @@
+FROM judge0/judge0:latest
+
+# Bake neuroscience datasets into the image at a path
+# that isolate mounts read-only by default (/usr/...)
+COPY datasets/ /usr/share/neuroscience-data/

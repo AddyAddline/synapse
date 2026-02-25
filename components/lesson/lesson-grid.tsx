@@ -32,6 +32,12 @@ const PHASE_META: Record<
     bg: 'bg-rose-50 dark:bg-rose-950/30',
     border: 'border-rose-200 dark:border-rose-800',
   },
+  5: {
+    label: 'Real Data',
+    color: 'text-violet-600',
+    bg: 'bg-violet-50 dark:bg-violet-950/30',
+    border: 'border-violet-200 dark:border-violet-800',
+  },
 }
 
 interface Lesson {
