@@ -1,0 +1,65 @@
+{
+  "phase": 1,
+  "order_num": 1,
+  "title": "Hello MATLAB",
+  "description": "Your very first MATLAB commands — displaying text, basic arithmetic, and understanding the command window.",
+  "difficulty": "beginner",
+  "estimated_minutes": 20,
+  "content_md": "# Hello MATLAB!\n\nWelcome to your MATLAB journey! MATLAB (short for **MAT**rix **LAB**oratory) is a powerful tool used by scientists all over the world to analyze data — including brain signals from EEG experiments.\n\nDon't worry if you've never written code before. We'll start from the very basics.\n\n## Your First Command\n\nThe simplest thing you can do in MATLAB is display text on the screen. Try this:\n\n```matlab\ndisp('Hello, Neuroscience!')\n```\n\n`disp` is short for **display**. It shows whatever you put inside the parentheses.\n\n## Basic Math\n\nMATLAB is like a powerful calculator. Try these:\n\n```matlab\n2 + 3\n10 - 4\n5 * 3\n20 / 4\n2 ^ 3\n```\n\nThe `^` symbol means \"to the power of\" — so `2^3` means 2 × 2 × 2 = 8.\n\n## Semicolons: To Show or Not to Show\n\nNotice what happens when you add a semicolon `;` at the end:\n\n```matlab\n5 + 3      % This shows the result: 8\n5 + 3;     % This runs silently (no output shown)\n```\n\nThe `%` symbol starts a **comment** — text that MATLAB ignores. It's for your own notes.\n\n## The `disp` Function\n\nYou can display numbers too:\n\n```matlab\ndisp(42)\ndisp(3.14159)\n```\n\nAnd you can combine text with numbers using `num2str`:\n\n```matlab\nage = 25;\ndisp(['I am ' num2str(age) ' years old'])\n```\n\n## Why This Matters for Neuroscience\n\nEvery analysis you'll do — loading EEG data, filtering brain signals, calculating frequencies — starts with these basic commands. Think of this as learning the alphabet before writing stories about the brain!",
+  "exercises": [
+    {
+      "order_num": 1,
+      "title": "Display a greeting",
+      "prompt": "Use the `disp` function to display the text: Hello, World!",
+      "starter_code": "% Display 'Hello, World!' below\n",
+      "solution": "disp('Hello, World!')",
+      "hints": [
+        "The disp function takes something inside parentheses and shows it on screen.",
+        "Text (called a 'string') needs to be wrapped in single quotes: 'like this'",
+        "The answer looks like: disp('...')"
+      ],
+      "test_cases": [
+        {
+          "expected_output": "Hello, World!\n"
+        }
+      ],
+      "requires_plot": false
+    },
+    {
+      "order_num": 2,
+      "title": "Brain math",
+      "prompt": "The human brain has approximately 86 billion neurons. Each neuron can have up to 10,000 connections (synapses). Calculate the total number of possible synapses and display it.\n\nHint: 86 billion = 86e9 (scientific notation), and 10000 connections each.",
+      "starter_code": "% Calculate total synapses\nneurons = 86e9;\nconnections_per_neuron = 10000;\n\n% Calculate and display the total\n",
+      "solution": "neurons = 86e9;\nconnections_per_neuron = 10000;\ntotal_synapses = neurons * connections_per_neuron;\ndisp(total_synapses)",
+      "hints": [
+        "Multiply the number of neurons by the connections per neuron.",
+        "Store the result in a variable: total_synapses = neurons * connections_per_neuron",
+        "Then display it: disp(total_synapses)"
+      ],
+      "test_cases": [
+        {
+          "expected_output": "860000000000000\n"
+        }
+      ],
+      "requires_plot": false
+    },
+    {
+      "order_num": 3,
+      "title": "Silent calculation",
+      "prompt": "Calculate 2 to the power of 10 and store it in a variable called `result`, but do NOT show the intermediate calculation. Only display the final answer using `disp`.\n\nRemember: adding a semicolon `;` suppresses output.",
+      "starter_code": "% Calculate 2^10 silently, then display it\n",
+      "solution": "result = 2^10;\ndisp(result)",
+      "hints": [
+        "Use the ^ operator for exponents: 2^10",
+        "Add a semicolon after the assignment to suppress output: result = 2^10;",
+        "Then use disp(result) to show just the final answer"
+      ],
+      "test_cases": [
+        {
+          "expected_output": "1024\n"
+        }
+      ],
+      "requires_plot": false
+    }
+  ]
+}

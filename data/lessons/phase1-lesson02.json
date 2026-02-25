@@ -1,0 +1,65 @@
+{
+  "phase": 1,
+  "order_num": 2,
+  "title": "Variables & Types",
+  "description": "Learn to store data in variables — numbers, text, and logical values. The building blocks of every program.",
+  "difficulty": "beginner",
+  "estimated_minutes": 25,
+  "content_md": "# Variables & Types\n\nImagine you're running a meditation experiment. You need to keep track of things like the participant's name, their heart rate, and whether they completed the session. In MATLAB, we use **variables** to store these pieces of information.\n\n## Creating Variables\n\nA variable is like a labeled box where you store data:\n\n```matlab\nage = 25\nname = 'Priya'\nheartRate = 72.5\n```\n\nThe `=` sign means \"store this value in this variable.\" It does NOT mean \"equals\" in the math sense.\n\n## Variable Naming Rules\n\n- Must start with a letter\n- Can contain letters, numbers, and underscores\n- Case-sensitive: `Age` and `age` are different variables!\n- No spaces allowed: use `heart_rate` or `heartRate`\n\n## Types of Data\n\nMATLAB handles different types of data:\n\n### Numbers (doubles)\n```matlab\nsampling_rate = 256;      % Hz — samples per second in EEG\ntemperature = 36.6;       % Body temperature\nnegative_value = -5;\n```\n\n### Text (strings/character arrays)\n```matlab\nparticipant = 'Subject_01';\ncondition = 'meditation';\n```\n\n### Logical (true/false)\n```matlab\nis_meditating = true;\ncompleted_session = false;\n```\n\n## Checking Your Variables\n\nUse `whos` to see all your variables:\n```matlab\nwhos\n```\n\nUse `class()` to check a variable's type:\n```matlab\nx = 42;\nclass(x)    % Returns 'double'\n```\n\n## Overwriting Variables\n\nYou can change a variable's value anytime:\n```matlab\ncount = 1;\ncount = count + 1;   % Now count is 2\ncount = count + 1;   % Now count is 3\n```\n\n## Why This Matters\n\nWhen you analyze EEG data, every measurement gets stored in a variable. The sampling rate, electrode positions, signal voltages — they're all variables. Mastering this is essential!",
+  "exercises": [
+    {
+      "order_num": 1,
+      "title": "Store experiment data",
+      "prompt": "You're setting up an EEG experiment. Create three variables:\n- `subject_name` storing the text 'Participant_01'\n- `sampling_rate` storing the number 256\n- `duration_minutes` storing the number 30\n\nThen display each one using `disp`.",
+      "starter_code": "% Create your experiment variables\n\n\n% Display each variable\n",
+      "solution": "subject_name = 'Participant_01';\nsampling_rate = 256;\nduration_minutes = 30;\ndisp(subject_name)\ndisp(sampling_rate)\ndisp(duration_minutes)",
+      "hints": [
+        "Text values go in single quotes: 'like this'",
+        "Numbers don't need quotes: sampling_rate = 256;",
+        "Use disp(variable_name) for each one"
+      ],
+      "test_cases": [
+        {
+          "expected_output": "Participant_01\n256\n30\n"
+        }
+      ],
+      "requires_plot": false
+    },
+    {
+      "order_num": 2,
+      "title": "Calculate total samples",
+      "prompt": "In an EEG experiment, the total number of data points (samples) equals:\n\ntotal_samples = sampling_rate × duration_in_seconds\n\nGiven:\n- sampling_rate = 256 (samples per second)\n- duration_minutes = 10\n\nFirst convert minutes to seconds, then calculate total_samples. Display the result.",
+      "starter_code": "sampling_rate = 256;\nduration_minutes = 10;\n\n% Convert to seconds\n\n\n% Calculate total samples\n\n\n% Display the result\n",
+      "solution": "sampling_rate = 256;\nduration_minutes = 10;\nduration_seconds = duration_minutes * 60;\ntotal_samples = sampling_rate * duration_seconds;\ndisp(total_samples)",
+      "hints": [
+        "To convert minutes to seconds, multiply by 60",
+        "duration_seconds = duration_minutes * 60",
+        "Then: total_samples = sampling_rate * duration_seconds"
+      ],
+      "test_cases": [
+        {
+          "expected_output": "153600\n"
+        }
+      ],
+      "requires_plot": false
+    },
+    {
+      "order_num": 3,
+      "title": "Update a counter",
+      "prompt": "Simulate counting meditation sessions. Start with `sessions = 0`. Then increment it by 1 three times (each line adds 1 to the current value). Display the final count.",
+      "starter_code": "sessions = 0;\n\n% Increment sessions three times\n\n\n% Display the final count\n",
+      "solution": "sessions = 0;\nsessions = sessions + 1;\nsessions = sessions + 1;\nsessions = sessions + 1;\ndisp(sessions)",
+      "hints": [
+        "To add 1 to a variable: sessions = sessions + 1",
+        "Do this three times on separate lines",
+        "The final value should be 3"
+      ],
+      "test_cases": [
+        {
+          "expected_output": "3\n"
+        }
+      ],
+      "requires_plot": false
+    }
+  ]
+}
