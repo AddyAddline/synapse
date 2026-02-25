@@ -1,7 +1,7 @@
 import OpenAI from 'openai'
 
-// Default: GPT-4o via OpenRouter (best quality for tutoring)
-const DEFAULT_MODEL = 'openai/gpt-4o'
+// Default: GPT-5.2 via OpenRouter (best quality for tutoring)
+const DEFAULT_MODEL = 'openai/gpt-5.2'
 // Free fallback models (when USE_FREE_TUTOR=true or on paid model failure)
 const FREE_MODEL = 'deepseek/deepseek-chat:free'
 

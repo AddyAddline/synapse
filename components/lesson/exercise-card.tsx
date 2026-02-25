@@ -5,6 +5,7 @@ import { CodeEditor } from '@/components/code-editor/editor'
 import { OutputPanel } from '@/components/code-editor/output-panel'
 import { Play, Lightbulb, RotateCcw } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import ReactMarkdown from 'react-markdown'
 
 interface Exercise {
   id: number
@@ -92,13 +93,13 @@ export function ExerciseCard({
           const expected = exercise.test_cases[0].expected_output
           const actual = data.stdout
           setIsCorrect(actual.trim() === expected.trim())
-        } else if (exercise.requires_plot && data.plotImage && data.status?.id === 3) {
-          // Plot exercise: correct if it ran and produced a plot
-          setIsCorrect(true)
-        } else if (data.status?.id === 3) {
-          setIsCorrect(true)
+        } else if (exercise.requires_plot) {
+          // Plot exercise: correct ONLY if it ran AND produced a plot
+          setIsCorrect(data.status?.id === 3 && !!data.plotImage)
         } else if (data.stderr || data.compile_output) {
           setIsCorrect(false)
+        } else if (data.status?.id === 3) {
+          setIsCorrect(true)
         }
       }
     } catch {
@@ -170,8 +171,8 @@ export function ExerciseCard({
       </div>
 
       {/* Prompt */}
-      <div className="px-5 py-3 text-sm text-gray-600 dark:text-gray-400 leading-relaxed border-b border-gray-100 dark:border-gray-800">
-        {exercise.prompt}
+      <div className="px-5 py-3 text-sm text-gray-600 dark:text-gray-400 leading-relaxed border-b border-gray-100 dark:border-gray-800 prose prose-sm dark:prose-invert max-w-none prose-p:my-1 prose-ol:my-1 prose-ul:my-1 prose-li:my-0.5 prose-code:text-brand-600 prose-code:bg-brand-50 dark:prose-code:bg-brand-950/30 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-code:before:content-none prose-code:after:content-none">
+        <ReactMarkdown>{exercise.prompt}</ReactMarkdown>
       </div>
 
       {/* Hint */}
