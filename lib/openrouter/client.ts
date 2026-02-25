@@ -19,7 +19,7 @@ export function createOpenRouterClient() {
     apiKey,
     defaultHeaders: {
       'HTTP-Referer': 'https://synapse-learn.vercel.app',
-      'X-Title': 'Synapse — MATLAB for Neuroscience',
+      'X-Title': 'Synapse - MATLAB for Neuroscience',
     },
   })
 }
