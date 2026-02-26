@@ -106,8 +106,17 @@ create policy "Users can update own profile"
   on profiles for update
   using (auth.uid() = id);
 
--- Lessons & exercises: readable by everyone (public curriculum)
--- No RLS needed — these are public read-only
+-- Lessons & exercises: readable by everyone, no write access via anon key
+alter table lessons enable row level security;
+alter table exercises enable row level security;
+
+create policy "Public read access for lessons"
+  on lessons for select
+  using (true);
+
+create policy "Public read access for exercises"
+  on exercises for select
+  using (true);
 
 -- User progress: users can only access own data
 create policy "Users can view own progress"

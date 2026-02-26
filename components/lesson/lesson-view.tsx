@@ -24,7 +24,6 @@ interface Exercise {
   title: string
   prompt: string
   starter_code: string
-  solution: string
   hints: string[]
   test_cases: { expected_output: string }[]
   requires_plot: boolean

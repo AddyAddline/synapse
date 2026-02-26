@@ -32,7 +32,7 @@ export async function getLessonExercises(
 ) {
   const { data, error } = await supabase
     .from('exercises')
-    .select('*')
+    .select('id, lesson_id, order_num, title, prompt, starter_code, hints, test_cases, requires_plot')
     .eq('lesson_id', lessonId)
     .order('order_num')
 
@@ -67,17 +67,18 @@ export async function upsertProgress(
     time_spent_seconds?: number
   }
 ) {
+  const upsertData: Record<string, unknown> = {
+    user_id: userId,
+    lesson_id: lessonId,
+    ...updates,
+  }
+  if (updates.completed) {
+    upsertData.completed_at = new Date().toISOString()
+  }
+
   const { data, error } = await supabase
     .from('user_progress')
-    .upsert(
-      {
-        user_id: userId,
-        lesson_id: lessonId,
-        ...updates,
-        completed_at: updates.completed ? new Date().toISOString() : undefined,
-      },
-      { onConflict: 'user_id,lesson_id' }
-    )
+    .upsert(upsertData, { onConflict: 'user_id,lesson_id' })
     .select()
     .single()
 
