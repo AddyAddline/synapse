@@ -1,13 +1,23 @@
 FROM judge0/judge0:latest
 
-# Fix Debian Buster EOL repos and install gnuplot for plot rendering
+USER root
+
+# Fix Debian Buster EOL repos, install gnuplot + system Octave 4.4.1 (has FFTW for FFT support)
+# The bundled Octave 5.1.0 was compiled without FFTW, so fft() fails.
+# We install the system Octave and symlink it over the old binary.
 RUN sed -i 's|http://deb.debian.org/debian|http://archive.debian.org/debian|g' /etc/apt/sources.list \
     && sed -i 's|http://security.debian.org/debian-security|http://archive.debian.org/debian-security|g' /etc/apt/sources.list \
     && sed -i '/buster-updates/d' /etc/apt/sources.list \
     && apt-get -o Acquire::Check-Valid-Until=false update -y \
-    && apt-get install -y --no-install-recommends gnuplot-nox \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends gnuplot-nox octave \
+    && mv /usr/local/octave-5.1.0/bin/octave-cli /usr/local/octave-5.1.0/bin/octave-cli.bak \
+    && mv /usr/local/octave-5.1.0/bin/octave /usr/local/octave-5.1.0/bin/octave.bak \
+    && ln -s /usr/bin/octave-cli /usr/local/octave-5.1.0/bin/octave-cli \
+    && ln -s /usr/bin/octave /usr/local/octave-5.1.0/bin/octave \
     && rm -rf /var/lib/apt/lists/*
 
 # Bake neuroscience datasets into the image at a path
 # that isolate mounts read-only by default (/usr/...)
 COPY datasets/ /usr/share/neuroscience-data/
+
+USER judge0

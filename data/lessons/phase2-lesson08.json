@@ -20,7 +20,7 @@
       ],
       "test_cases": [
         {
-          "expected_output": "4.7500\n12.1243\n3.2500\n34\n"
+          "expected_output": "4.7500\n12.102\n3.2000\n34\n"
         }
       ],
       "requires_plot": false

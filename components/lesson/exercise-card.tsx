@@ -89,17 +89,30 @@ export function ExerciseCard({
         })
 
         // Check correctness against test cases
-        if (exercise.test_cases.length > 0 && data.stdout) {
-          const normalize = (s: string) =>
-            s.split('\n').map(line => line.trim()).filter(Boolean).join('\n')
-          const expected = normalize(exercise.test_cases[0].expected_output)
-          const actual = normalize(data.stdout)
-          setIsCorrect(actual === expected)
+        const normalize = (s: string) =>
+          s.split('\n').map(line => line.trim()).filter(Boolean).join('\n')
+
+        if (exercise.test_cases.length > 0) {
+          // Has test cases: must have stdout that matches
+          if (data.stdout) {
+            const expected = normalize(exercise.test_cases[0].expected_output)
+            const actual = normalize(data.stdout)
+            setIsCorrect(actual === expected)
+          } else {
+            // No output but exercise expects output = wrong
+            setIsCorrect(false)
+          }
         } else if (exercise.requires_plot) {
           // Plot exercise: correct ONLY if it ran AND produced a plot
           setIsCorrect(data.status?.id === 3 && !!data.plotImage)
         } else if (data.stderr || data.compile_output) {
-          setIsCorrect(false)
+          // No test cases, no plot: errors mean wrong
+          // But ignore Octave warnings (lines starting with "warning:")
+          const errorText = (data.stderr || '') + (data.compile_output || '')
+          const hasRealError = errorText.split('\n').some(
+            (line: string) => line.trim() && !line.trim().startsWith('warning:')
+          )
+          setIsCorrect(!hasRealError && data.status?.id === 3)
         } else if (data.status?.id === 3) {
           setIsCorrect(true)
         }

@@ -802,7 +802,7 @@ data = [2.1, 3.5, 1.8, 4.2, 3.0, 2.7];
 disp(m)
 disp(s)',
   '["For multiple outputs, use square brackets: function [m, s] = signal_stats(signal)","Inside the function: m = mean(signal); and s = std(signal);","Call it with: [m, s] = signal_stats(data); then disp(m) and disp(s)"]',
-  '[{"expected_output":"2.8833\n0.8886\n"}]',
+  '[{"expected_output":"2.8833\n0.88863\n"}]',
   false);
 
 INSERT INTO exercises (lesson_id, order_num, title, prompt, starter_code, solution, hints, test_cases, requires_plot)
@@ -1435,7 +1435,7 @@ disp(std(amplitudes))
 disp(median(amplitudes))
 disp(max(amplitudes) - min(amplitudes))',
   '["Use the built-in functions: mean(), std(), median(), max(), min()","The range is calculated as max(amplitudes) - min(amplitudes)","Wrap each calculation in disp(): disp(mean(amplitudes)), disp(std(amplitudes)), etc."]',
-  '[{"expected_output":"4.7500\n12.1243\n3.2500\n34\n"}]',
+  '[{"expected_output":"4.7500\n12.102\n3.2000\n34\n"}]',
   false);
 
 INSERT INTO exercises (lesson_id, order_num, title, prompt, starter_code, solution, hints, test_cases, requires_plot)
@@ -3386,9 +3386,9 @@ Steps:
 4. Extract spike times from the binary spike vector
 5. Display the number of spikes and the measured firing rate (num_spikes / duration)
 
-Use rng(42) for reproducibility.',
+Use rand("state", 42); randn("state", 42) for reproducibility.',
   '% Simulate a Poisson spike train
-rng(42);
+rand("state", 42); randn("state", 42);
 
 firing_rate = 20;  % Hz
 duration = 5;      % seconds
@@ -3406,7 +3406,7 @@ time_bins = 0:dt:duration-dt;
 % Display results
 % YOUR CODE HERE
 ',
-  'rng(42);
+  'rand("state", 42); randn("state", 42);
 
 firing_rate = 20;
 duration = 5;
@@ -3424,7 +3424,7 @@ measured_rate = num_spikes / duration;
 disp([''Number of spikes: '' num2str(num_spikes)]);
 disp([''Measured firing rate: '' num2str(measured_rate) '' Hz'']);',
   '["A Poisson spike train: generate a random number for each time bin using rand(1, length(time_bins)). If the random number is less than firing_rate * dt, that bin has a spike.","Create a logical vector: spike_vector = rand(1, length(time_bins)) < (firing_rate * dt); Then get spike times: spike_times = time_bins(spike_vector);","Count spikes with length(spike_times) and divide by duration to get the measured rate. Display with disp([''Number of spikes: '' num2str(num_spikes)]);"]',
-  '[{"expected_output":"Number of spikes: 94\nMeasured firing rate: 18.8 Hz\n"}]',
+  '[{"expected_output":"Number of spikes: 89\nMeasured firing rate: 17.8 Hz\n"}]',
   false);
 
 INSERT INTO exercises (lesson_id, order_num, title, prompt, starter_code, solution, hints, test_cases, requires_plot)
@@ -3442,9 +3442,9 @@ Steps:
 3. Build each sine component and add them together with noise
 4. Display the total number of samples, the min voltage (rounded to 1 decimal), and the max voltage (rounded to 1 decimal)
 
-Use rng(10) for reproducibility.',
+Use rand("state", 10); randn("state", 10) for reproducibility.',
   '% Simulate multi-component EEG signal
-rng(10);
+rand("state", 10); randn("state", 10);
 
 fs = 256;           % sampling rate (Hz)
 duration = 2;       % seconds
@@ -3465,7 +3465,7 @@ t = 0:1/fs:duration-1/fs;
 % Display properties
 % YOUR CODE HERE
 ',
-  'rng(10);
+  'rand("state", 10); randn("state", 10);
 
 fs = 256;
 duration = 2;
@@ -3483,7 +3483,7 @@ disp([''Total samples: '' num2str(length(eeg_signal))]);
 disp([''Min voltage: '' num2str(round(min(eeg_signal)*10)/10) '' uV'']);
 disp([''Max voltage: '' num2str(round(max(eeg_signal)*10)/10) '' uV'']);',
   '["Each sine component follows the pattern: amplitude * sin(2 * pi * frequency * t). For example, alpha = 20 * sin(2 * pi * 10 * t);","Generate noise with randn: noise = 5 * randn(1, length(t)); Then combine: eeg_signal = alpha + beta + theta + noise;","For rounding to 1 decimal: round(value*10)/10. Display with disp([''Min voltage: '' num2str(round(min(eeg_signal)*10)/10) '' uV'']);"]',
-  '[{"expected_output":"Total samples: 512\nMin voltage: -45.2 uV\nMax voltage: 42.5 uV\n"}]',
+  '[{"expected_output":"Total samples: 512\nMin voltage: -42.4 uV\nMax voltage: 44.6 uV\n"}]',
   false);
 
 INSERT INTO exercises (lesson_id, order_num, title, prompt, starter_code, solution, hints, test_cases, requires_plot)
@@ -3624,11 +3624,11 @@ VALUES (16, 1, 'Calculate firing rate from spike times',
 3. The binned firing rate using 500 ms bins over the full recording
 4. The peak binned firing rate (maximum across all bins)
 
-Use rng(42). Generate spikes using a Poisson process at 35 Hz for 10 seconds with dt = 0.001.
+Use rand("state", 42); randn("state", 42). Generate spikes using a Poisson process at 35 Hz for 10 seconds with dt = 0.001.
 
 Display: number of spikes, overall firing rate (1 decimal), and peak binned firing rate (1 decimal).',
   '% Calculate firing rates from spike data
-rng(42);
+rand("state", 42); randn("state", 42);
 
 % Generate Poisson spike train
 firing_rate_true = 35;  % Hz
@@ -3655,7 +3655,7 @@ bin_width = 0.5;
 % Display results
 % YOUR CODE HERE
 ',
-  'rng(42);
+  'rand("state", 42); randn("state", 42);
 
 firing_rate_true = 35;
 duration = 10;
@@ -3680,12 +3680,12 @@ disp([''Number of spikes: '' num2str(num_spikes)]);
 disp([''Overall firing rate: '' num2str(round(overall_rate*10)/10) '' Hz'']);
 disp([''Peak binned firing rate: '' num2str(round(peak_rate*10)/10) '' Hz'']);',
   '["Total spikes: num_spikes = length(spike_times). Overall rate: num_spikes / duration.","For binned rate: edges = 0:bin_width:duration; counts = histc(spike_times, edges); Remove the last bin edge: counts = counts(1:end-1); Then binned_rate = counts / bin_width;","Peak rate: peak_rate = max(binned_rate). Round to 1 decimal with round(value*10)/10."]',
-  '[{"expected_output":"Number of spikes: 341\nOverall firing rate: 34.1 Hz\nPeak binned firing rate: 48 Hz\n"}]',
+  '[{"expected_output":"Number of spikes: 319\nOverall firing rate: 31.9 Hz\nPeak binned firing rate: 40 Hz\n"}]',
   false);
 
 INSERT INTO exercises (lesson_id, order_num, title, prompt, starter_code, solution, hints, test_cases, requires_plot)
 VALUES (16, 2, 'Compute inter-spike intervals',
-  'From the same spike train (rng(42), 35 Hz Poisson, 10 seconds, dt=0.001), compute the inter-spike interval (ISI) distribution.
+  'From the same spike train (rand("state", 42); randn("state", 42), 35 Hz Poisson, 10 seconds, dt=0.001), compute the inter-spike interval (ISI) distribution.
 
 Calculate:
 1. The ISI vector (time between consecutive spikes)
@@ -3696,7 +3696,7 @@ Calculate:
 
 Display all five results.',
   '% ISI analysis
-rng(42);
+rand("state", 42); randn("state", 42);
 
 firing_rate_true = 35;
 duration = 10;
@@ -3724,7 +3724,7 @@ spike_times = time_bins(spike_vector);
 % Display all results
 % YOUR CODE HERE
 ',
-  'rng(42);
+  'rand("state", 42); randn("state", 42);
 
 firing_rate_true = 35;
 duration = 10;
@@ -3746,14 +3746,14 @@ disp([''Std ISI: '' num2str(round(std_isi_ms*100)/100) '' ms'']);
 disp([''CV: '' num2str(round(CV*100)/100)]);
 disp([''ISIs < 10ms: '' num2str(round(pct_short*10)/10) ''%'']);',
   '["ISI = diff(spike_times) gives you the time between consecutive spikes. Multiply by 1000 to convert seconds to milliseconds.","Mean and std: mean_isi_ms = mean(ISI) * 1000; std_isi_ms = std(ISI) * 1000; CV = std(ISI) / mean(ISI);","For percentage of short ISIs: pct_short = sum(ISI < 0.010) / length(ISI) * 100; Round to 2 decimals: round(value*100)/100."]',
-  '[{"expected_output":"Mean ISI: 29.35 ms\nStd ISI: 28.26 ms\nCV: 0.96\nISIs < 10ms: 27.6%\n"}]',
+  '[{"expected_output":"Mean ISI: 31.4 ms\nStd ISI: 30.31 ms\nCV: 0.97\nISIs < 10ms: 24.8%\n"}]',
   false);
 
 INSERT INTO exercises (lesson_id, order_num, title, prompt, starter_code, solution, hints, test_cases, requires_plot)
 VALUES (16, 3, 'Create a raster plot of multiple neurons',
   'Simulate and plot spike trains for 8 neurons with different firing rates.
 
-Use rng(123). Create Poisson spike trains (dt = 0.001) for 3 seconds for 8 neurons with firing rates: [5, 10, 15, 20, 30, 40, 50, 60] Hz.
+Use rand("state", 123); randn("state", 123). Create Poisson spike trains (dt = 0.001) for 3 seconds for 8 neurons with firing rates: [5, 10, 15, 20, 30, 40, 50, 60] Hz.
 
 Create a raster plot where:
 - Each neuron is on a separate horizontal row (neuron 1 at top, neuron 8 at bottom)
@@ -3762,7 +3762,7 @@ Create a raster plot where:
 - Title: ''Raster Plot - 8 Neurons''
 - Set Y-axis ticks at 1 through 8',
   '% Raster plot of 8 neurons
-rng(123);
+rand("state", 123); randn("state", 123);
 
 firing_rates = [5, 10, 15, 20, 30, 40, 50, 60];
 duration = 3;
@@ -3786,7 +3786,7 @@ end
 
 hold off;
 ',
-  'rng(123);
+  'rand("state", 123); randn("state", 123);
 
 firing_rates = [5, 10, 15, 20, 30, 40, 50, 60];
 duration = 3;
@@ -3916,7 +3916,7 @@ VALUES (17, 1, 'Average reference multi-channel EEG',
   'Simulate a 4-channel EEG recording and apply average referencing.
 
 Steps:
-1. Use rng(50). Set fs = 256, duration = 2 seconds.
+1. Use rand("state", 50); randn("state", 50). Set fs = 256, duration = 2 seconds.
 2. Create a time vector.
 3. Simulate 4 channels of EEG (channels x time_points matrix):
    - Channel 1: 15*sin(2*pi*10*t) + 3*randn
@@ -3929,7 +3929,7 @@ Steps:
 
 Display: the size of the EEG matrix, the mean of the original data at time point 100 (rounded to 2 decimals), and the mean of the re-referenced data at time point 100 (rounded to 10 decimal places, displayed with format).',
   '% Average referencing of simulated EEG
-rng(50);
+rand("state", 50); randn("state", 50);
 
 fs = 256;
 duration = 2;
@@ -3948,7 +3948,7 @@ num_samples = length(t);
 % Display results
 % YOUR CODE HERE
 ',
-  'rng(50);
+  'rand("state", 50); randn("state", 50);
 
 fs = 256;
 duration = 2;
@@ -3967,9 +3967,9 @@ eeg_reref = eeg_data - avg_ref;
 
 disp([''EEG matrix size: '' num2str(size(eeg_data,1)) '' x '' num2str(size(eeg_data,2))]);
 disp([''Mean at time point 100 (original): '' num2str(round(mean(eeg_data(:,100))*100)/100)]);
-disp([''Mean at time point 100 (re-referenced): '' num2str(mean(eeg_reref(:,100)))]);',
+disp([''Mean at time point 100 (re-referenced): '' num2str(round(mean(eeg_reref(:,100))))]);',
   '["Build the EEG matrix row by row: eeg_data = zeros(4, num_samples); eeg_data(1,:) = 15*sin(2*pi*10*t) + 3*randn(1, num_samples); and so on for each channel.","Average reference: avg_ref = mean(eeg_data, 1); This takes the mean across rows (channels) at each time point. Then eeg_reref = eeg_data - avg_ref;","To verify: mean(eeg_reref(:,100)) should be 0 (or very close). Display using disp([''Mean at time point 100 (re-referenced): '' num2str(mean(eeg_reref(:,100)))]);"]',
-  '[{"expected_output":"EEG matrix size: 4 x 512\nMean at time point 100 (original): 11.2\nMean at time point 100 (re-referenced): 0\n"}]',
+  '[{"expected_output":"EEG matrix size: 4 x 512\nMean at time point 100 (original): -9.21\nMean at time point 100 (re-referenced): 0\n"}]',
   false);
 
 INSERT INTO exercises (lesson_id, order_num, title, prompt, starter_code, solution, hints, test_cases, requires_plot)
@@ -3977,7 +3977,7 @@ VALUES (17, 2, 'Detect and remove artifacts',
   'Simulate a single-channel EEG signal with embedded artifacts, then detect and clean them.
 
 Steps:
-1. Use rng(77). Set fs = 256, duration = 5 seconds.
+1. Use rand("state", 77); randn("state", 77). Set fs = 256, duration = 5 seconds.
 2. Create a clean EEG signal: 12*sin(2*pi*10*t) + 4*randn
 3. Insert 3 blink artifacts: At time indices 300-310, 700-710, and 1100-1110, add 150 uV to simulate blinks
 4. Detect artifacts: find all indices where abs(signal) > 80 uV
@@ -3985,7 +3985,7 @@ Steps:
 6. Display: number of artifact samples detected, percentage of data that is artifact (rounded to 2 decimals), max absolute value of cleaned signal (rounded to 1 decimal)
 ',
   '% Artifact detection and removal
-rng(77);
+rand("state", 77); randn("state", 77);
 
 fs = 256;
 duration = 5;
@@ -4009,7 +4009,7 @@ cleaned_eeg = eeg_with_artifacts;
 % Display results
 % YOUR CODE HERE
 ',
-  'rng(77);
+  'rand("state", 77); randn("state", 77);
 
 fs = 256;
 duration = 5;
@@ -4035,7 +4035,7 @@ disp([''Artifact samples detected: '' num2str(num_artifacts)]);
 disp([''Percentage artifact: '' num2str(round(pct_artifact*100)/100) ''%'']);
 disp([''Max absolute cleaned signal: '' num2str(round(max(abs(cleaned_eeg))*10)/10) '' uV'']);',
   '["Add artifacts: eeg_with_artifacts(300:310) = eeg_with_artifacts(300:310) + 150; Repeat for the other two ranges.","Detect: artifact_idx = find(abs(eeg_with_artifacts) > threshold); num_artifacts = length(artifact_idx); Clean: cleaned_eeg(artifact_idx) = 0;","Percentage: pct_artifact = num_artifacts / length(eeg_with_artifacts) * 100; Max cleaned: max(abs(cleaned_eeg))."]',
-  '[{"expected_output":"Artifact samples detected: 33\nPercentage artifact: 2.58%\nMax absolute cleaned signal: 22.7 uV\n"}]',
+  '[{"expected_output":"Artifact samples detected: 33\nPercentage artifact: 2.58%\nMax absolute cleaned signal: 26 uV\n"}]',
   false);
 
 INSERT INTO exercises (lesson_id, order_num, title, prompt, starter_code, solution, hints, test_cases, requires_plot)
@@ -4043,7 +4043,7 @@ VALUES (17, 3, 'Extract an event-related potential (ERP)',
   'Simulate a continuous EEG recording with repeated stimulus responses embedded in noise, then extract the ERP by averaging across trials.
 
 Steps:
-1. Use rng(99). Set fs = 256, total_duration = 30 seconds.
+1. Use rand("state", 99); randn("state", 99). Set fs = 256, total_duration = 30 seconds.
 2. Generate continuous noise: 8*randn for the full duration.
 3. Create 20 events spaced every 1.2 seconds, starting at t = 0.5s. Event samples = round(event_times * fs) + 1.
 4. At each event, embed a response: a positive peak at 100ms post-event (sample offset = round(0.1*fs)) with amplitude 5 uV (add 5 at that single sample), and a negative dip at 200ms (offset = round(0.2*fs)) with amplitude -3 uV.
@@ -4053,7 +4053,7 @@ Steps:
 
 The averaging should reveal the embedded peaks while reducing the noise.',
   '% ERP extraction
-rng(99);
+rand("state", 99); randn("state", 99);
 
 fs = 256;
 total_duration = 30;
@@ -4081,7 +4081,7 @@ epochs = zeros(num_events, epoch_length);
 % Display results
 % YOUR CODE HERE
 ',
-  'rng(99);
+  'rand("state", 99); randn("state", 99);
 
 fs = 256;
 total_duration = 30;
@@ -4117,7 +4117,7 @@ disp([''Number of epochs: '' num2str(num_events)]);
 disp([''ERP at 100ms: '' num2str(round(ERP(sample_100ms)*100)/100) '' uV'']);
 disp([''ERP at 200ms: '' num2str(round(ERP(sample_200ms)*100)/100) '' uV'']);',
   '["For embedding: loop over events. peak_sample = event_samples(i) + round(0.1*fs); continuous_eeg(peak_sample) = continuous_eeg(peak_sample) + 5; Similarly for the dip at 0.2s.","For epoching: loop over events. start_idx = event_samples(i); end_idx = start_idx + epoch_length - 1; epochs(i,:) = continuous_eeg(start_idx:end_idx);","ERP = mean(epochs, 1); To read specific time points: sample_100ms = round(0.1*fs) + 1; disp([''ERP at 100ms: '' num2str(round(ERP(sample_100ms)*100)/100) '' uV'']);"]',
-  '[{"expected_output":"Number of epochs: 20\nERP at 100ms: 6.84 uV\nERP at 200ms: -3.33 uV\n"}]',
+  '[{"expected_output":"Number of epochs: 20\nERP at 100ms: 5.54 uV\nERP at 200ms: -3.25 uV\n"}]',
   false);
 
 
@@ -4207,7 +4207,7 @@ VALUES (18, 1, 'Calculate alpha power from simulated EEG',
   'Simulate an EEG signal with known frequency components and extract the alpha band (8-13 Hz) power using the FFT.
 
 Steps:
-1. Use rng(33). Set fs = 256, duration = 4 seconds.
+1. Use rand("state", 33); randn("state", 33). Set fs = 256, duration = 4 seconds.
 2. Create a signal with:
    - Alpha component: 20*sin(2*pi*10*t) (10 Hz, amplitude 20)
    - Beta component: 5*sin(2*pi*25*t) (25 Hz, amplitude 5)
@@ -4220,7 +4220,7 @@ Steps:
 
 Display: total power (rounded to nearest integer), alpha power (rounded to nearest integer), relative alpha power (rounded to 1 decimal, with percent sign).',
   '% Alpha power calculation
-rng(33);
+rand("state", 33); randn("state", 33);
 
 fs = 256;
 duration = 4;
@@ -4251,7 +4251,7 @@ signal = alpha_component + beta_component + noise;
 % Display
 % YOUR CODE HERE
 ',
-  'rng(33);
+  'rand("state", 33); randn("state", 33);
 
 fs = 256;
 duration = 4;
@@ -4278,7 +4278,7 @@ disp([''Total power: '' num2str(round(total_power))]);
 disp([''Alpha power: '' num2str(round(alpha_power))]);
 disp([''Relative alpha power: '' num2str(round(relative_alpha*10)/10) ''%'']);',
   '["FFT: fft_result = fft(signal); Power: power_spectrum = (abs(fft_result(1:N/2+1)).^2) / N; Frequency: freqs = (0:N/2) * fs / N;","Alpha indices: alpha_idx = freqs >= 8 & freqs <= 13; Alpha power: alpha_power = sum(power_spectrum(alpha_idx));","Total power: total_power = sum(power_spectrum); Relative: relative_alpha = alpha_power / total_power * 100; Display with round."]',
-  '[{"expected_output":"Total power: 213\nAlpha power: 195\nRelative alpha power: 91.8%\n"}]',
+  '[{"expected_output":"Total power: 115270\nAlpha power: 104360\nRelative alpha power: 90.5%\n"}]',
   false);
 
 INSERT INTO exercises (lesson_id, order_num, title, prompt, starter_code, solution, hints, test_cases, requires_plot)
@@ -4291,7 +4291,7 @@ VALUES (18, 2, 'Compare alpha power: meditation vs rest',
 Both signals: 10 Hz for alpha, 20 Hz for beta, also add a 6 Hz theta component with amplitude 10 in meditation and amplitude 3 at rest.
 
 Steps:
-1. Use rng(55). Set fs = 256, duration = 5 seconds.
+1. Use rand("state", 55); randn("state", 55). Set fs = 256, duration = 5 seconds.
 2. Generate rest signal: 8*sin(2*pi*10*t) + 12*sin(2*pi*20*t) + 3*sin(2*pi*6*t) + 4*randn
 3. Generate meditation signal: 22*sin(2*pi*10*t) + 4*sin(2*pi*20*t) + 10*sin(2*pi*6*t) + 3*randn
 4. Compute power spectra for both
@@ -4300,7 +4300,7 @@ Steps:
 
 Display: rest alpha power (rounded to nearest integer), meditation alpha power (rounded to nearest integer), and the percentage change (rounded to 1 decimal, with percent sign).',
   '% Meditation vs rest alpha power comparison
-rng(55);
+rand("state", 55); randn("state", 55);
 
 fs = 256;
 duration = 5;
@@ -4325,7 +4325,7 @@ N = length(t);
 % Display results
 % YOUR CODE HERE
 ',
-  'rng(55);
+  'rand("state", 55); randn("state", 55);
 
 fs = 256;
 duration = 5;
@@ -4353,7 +4353,7 @@ disp([''Rest alpha power: '' num2str(round(alpha_rest))]);
 disp([''Meditation alpha power: '' num2str(round(alpha_med))]);
 disp([''Alpha power change: '' num2str(round(pct_change*10)/10) ''%'']);',
   '["Build each signal by summing sine waves and noise. rest_signal = 8*sin(2*pi*10*t) + 12*sin(2*pi*20*t) + 3*sin(2*pi*6*t) + 4*randn(1, N);","Compute FFT and power for both: fft_rest = fft(rest_signal); power_rest = (abs(fft_rest(1:N/2+1)).^2)/N; Same for meditation. freqs = (0:N/2)*fs/N;","Alpha indices: alpha_idx = freqs >= 8 & freqs <= 13; alpha_rest = sum(power_rest(alpha_idx)); Percentage change: (alpha_med - alpha_rest)/alpha_rest * 100."]',
-  '[{"expected_output":"Rest alpha power: 41\nMeditation alpha power: 303\nAlpha power change: 639.1%\n"}]',
+  '[{"expected_output":"Rest alpha power: 19453\nMeditation alpha power: 156883\nAlpha power change: 706.5%\n"}]',
   false);
 
 INSERT INTO exercises (lesson_id, order_num, title, prompt, starter_code, solution, hints, test_cases, requires_plot)
@@ -4368,7 +4368,7 @@ Simulate a 60-second recording divided into three 20-second phases:
 All phases also include: beta at amplitude 6 (20 Hz) and noise with std 3.
 
 Steps:
-1. Use rng(44). Set fs = 256.
+1. Use rand("state", 44); randn("state", 44). Set fs = 256.
 2. Build the signal in three segments concatenated together.
 3. Compute power spectra in 4-second sliding windows (non-overlapping, so 15 windows total).
 4. For each window, compute alpha (8-13 Hz) and theta (4-8 Hz) power.
@@ -4377,7 +4377,7 @@ Steps:
    - Bottom: theta power over time (window number)
    Add appropriate labels and titles. Main title: ''Brain Wave Changes During Meditation''',
   '% Meditation brain wave changes over time
-rng(44);
+rand("state", 44); randn("state", 44);
 
 fs = 256;
 phase_duration = 20;  % seconds each
@@ -4418,7 +4418,7 @@ end
 figure;
 % YOUR CODE HERE
 ',
-  'rng(44);
+  'rand("state", 44); randn("state", 44);
 
 fs = 256;
 phase_duration = 20;
@@ -4857,7 +4857,7 @@ VALUES (20, 1, 'Build a complete preprocessing pipeline',
   'Build a complete EEG preprocessing pipeline for a simulated meditation study.
 
 Steps:
-1. Use rng(200). Set fs = 256, duration = 60 seconds per condition.
+1. Use rand("state", 200); randn("state", 200). Set fs = 256, duration = 60 seconds per condition.
 2. Define 4 channels: Fz, Cz, Pz, Oz.
 3. Simulate BASELINE data (4 channels x samples):
    - All channels: alpha (10 Hz) amplitude [5, 6, 8, 9] per channel + beta (20 Hz) amplitude 7 + theta (6 Hz) amplitude 3 + noise std 4
@@ -4874,7 +4874,7 @@ Steps:
    - All subplots: xlabel ''Time (s)'', ylabel ''Voltage (uV)''
    - Main title: ''Preprocessing Pipeline: Meditation EEG Study''',
   '% Capstone Exercise 1: Complete preprocessing pipeline
-rng(200);
+rand("state", 200); randn("state", 200);
 
 fs = 256;
 duration = 60;
@@ -4921,7 +4921,7 @@ threshold = 60;
 figure;
 % YOUR CODE HERE
 ',
-  'rng(200);
+  'rand("state", 200); randn("state", 200);
 
 fs = 256;
 duration = 60;
@@ -5002,7 +5002,7 @@ VALUES (20, 2, 'Spectral analysis: meditation vs baseline',
   'Perform spectral analysis on the simulated meditation EEG data to compare frequency band power between conditions.
 
 Steps:
-1. Use rng(200). Regenerate the same data as Exercise 1 (same simulation, artifacts, referencing, cleaning).
+1. Use rand("state", 200); randn("state", 200). Regenerate the same data as Exercise 1 (same simulation, artifacts, referencing, cleaning).
 2. For each channel and each condition, compute the power spectrum using FFT on the cleaned data.
 3. Compute band power for each channel in both conditions:
    - Theta (4-8 Hz)
@@ -5014,7 +5014,7 @@ Steps:
    - Main title: ''Spectral Analysis: Meditation vs Baseline''
    - Add legends to both subplots: ''Baseline'', ''Meditation''',
   '% Capstone Exercise 2: Spectral analysis
-rng(200);
+rand("state", 200); randn("state", 200);
 
 fs = 256;
 duration = 60;
@@ -5079,7 +5079,7 @@ end
 figure;
 % YOUR CODE HERE
 ',
-  'rng(200);
+  'rand("state", 200); randn("state", 200);
 
 fs = 256;
 duration = 60;
@@ -5171,7 +5171,7 @@ INSERT INTO exercises (lesson_id, order_num, title, prompt, starter_code, soluti
 VALUES (20, 3, 'Create a publication-quality figure',
   'Create a polished, publication-quality multi-panel figure that summarizes the complete meditation EEG study results.
 
-Regenerate the same data (rng(200), same pipeline as Exercises 1-2). Then create a figure with 6 panels (3 rows x 2 columns):
+Regenerate the same data (rand("state", 200); randn("state", 200), same pipeline as Exercises 1-2). Then create a figure with 6 panels (3 rows x 2 columns):
 
 **Row 1: Power Spectra**
 - (1,1): Power spectrum (1-40 Hz) for Oz channel — baseline. Shade alpha band (8-13 Hz) in light blue. Title: ''Baseline Power Spectrum (Oz)''. Ylabel: ''Power (uV^2)''. Xlabel: ''Frequency (Hz)''.
@@ -5193,7 +5193,7 @@ Main figure title: ''Meditation EEG Study: Complete Results''
 
 Make the figure large: set figure position to [50, 50, 1200, 900].',
   '% Capstone Exercise 3: Publication-quality figure
-rng(200);
+rand("state", 200); randn("state", 200);
 
 fs = 256;
 duration = 60;
@@ -5280,7 +5280,7 @@ figure(''Position'', [50, 50, 1200, 900]);
 
 sgtitle(''Meditation EEG Study: Complete Results'');
 ',
-  'rng(200);
+  'rand("state", 200); randn("state", 200);
 
 fs = 256;
 duration = 60;

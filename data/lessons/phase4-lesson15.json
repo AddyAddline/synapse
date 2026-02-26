@@ -10,9 +10,9 @@
     {
       "order_num": 1,
       "title": "Create simulated spike train data",
-      "prompt": "Simulate spike train data for a neuron firing at approximately 20 Hz (20 spikes per second) over a 5-second recording.\n\nUse a Poisson process: at each 1 ms time bin, the probability of a spike is firing_rate * dt.\n\nSteps:\n1. Set the firing rate to 20 Hz and duration to 5 seconds\n2. Create time bins of 1 ms (dt = 0.001)\n3. Use rand to generate random numbers and compare to (firing_rate * dt) to determine spikes\n4. Extract spike times from the binary spike vector\n5. Display the number of spikes and the measured firing rate (num_spikes / duration)\n\nUse rng(42) for reproducibility.",
-      "starter_code": "% Simulate a Poisson spike train\nrng(42);\n\nfiring_rate = 20;  % Hz\nduration = 5;      % seconds\ndt = 0.001;        % 1 ms bins\n\n% Create time vector\ntime_bins = 0:dt:duration-dt;\n\n% Generate spikes: random number < firing_rate*dt means a spike\n% YOUR CODE HERE\n\n% Extract spike times (times where spikes occurred)\n% YOUR CODE HERE\n\n% Display results\n% YOUR CODE HERE\n",
-      "solution": "rng(42);\n\nfiring_rate = 20;\nduration = 5;\ndt = 0.001;\n\ntime_bins = 0:dt:duration-dt;\n\nspike_vector = rand(1, length(time_bins)) < (firing_rate * dt);\n\nspike_times = time_bins(spike_vector);\n\nnum_spikes = length(spike_times);\nmeasured_rate = num_spikes / duration;\n\ndisp(['Number of spikes: ' num2str(num_spikes)]);\ndisp(['Measured firing rate: ' num2str(measured_rate) ' Hz']);",
+      "prompt": "Simulate spike train data for a neuron firing at approximately 20 Hz (20 spikes per second) over a 5-second recording.\n\nUse a Poisson process: at each 1 ms time bin, the probability of a spike is firing_rate * dt.\n\nSteps:\n1. Set the firing rate to 20 Hz and duration to 5 seconds\n2. Create time bins of 1 ms (dt = 0.001)\n3. Use rand to generate random numbers and compare to (firing_rate * dt) to determine spikes\n4. Extract spike times from the binary spike vector\n5. Display the number of spikes and the measured firing rate (num_spikes / duration)\n\nUse rand(\"state\", 42); randn(\"state\", 42) for reproducibility.",
+      "starter_code": "% Simulate a Poisson spike train\nrand(\"state\", 42); randn(\"state\", 42);\n\nfiring_rate = 20;  % Hz\nduration = 5;      % seconds\ndt = 0.001;        % 1 ms bins\n\n% Create time vector\ntime_bins = 0:dt:duration-dt;\n\n% Generate spikes: random number < firing_rate*dt means a spike\n% YOUR CODE HERE\n\n% Extract spike times (times where spikes occurred)\n% YOUR CODE HERE\n\n% Display results\n% YOUR CODE HERE\n",
+      "solution": "rand(\"state\", 42); randn(\"state\", 42);\n\nfiring_rate = 20;\nduration = 5;\ndt = 0.001;\n\ntime_bins = 0:dt:duration-dt;\n\nspike_vector = rand(1, length(time_bins)) < (firing_rate * dt);\n\nspike_times = time_bins(spike_vector);\n\nnum_spikes = length(spike_times);\nmeasured_rate = num_spikes / duration;\n\ndisp(['Number of spikes: ' num2str(num_spikes)]);\ndisp(['Measured firing rate: ' num2str(measured_rate) ' Hz']);",
       "hints": [
         "A Poisson spike train: generate a random number for each time bin using rand(1, length(time_bins)). If the random number is less than firing_rate * dt, that bin has a spike.",
         "Create a logical vector: spike_vector = rand(1, length(time_bins)) < (firing_rate * dt); Then get spike times: spike_times = time_bins(spike_vector);",
@@ -20,7 +20,7 @@
       ],
       "test_cases": [
         {
-          "expected_output": "Number of spikes: 94\nMeasured firing rate: 18.8 Hz\n"
+          "expected_output": "Number of spikes: 89\nMeasured firing rate: 17.8 Hz\n"
         }
       ],
       "requires_plot": false
@@ -28,9 +28,9 @@
     {
       "order_num": 2,
       "title": "Simulate a basic EEG-like signal",
-      "prompt": "Create a simulated EEG signal that contains three frequency components commonly found in brain recordings:\n- Alpha waves: 10 Hz, amplitude 20 microvolts\n- Beta waves: 22 Hz, amplitude 8 microvolts\n- Theta waves: 6 Hz, amplitude 15 microvolts\n\nPlus random noise with standard deviation of 5 microvolts.\n\nSteps:\n1. Set sampling rate to 256 Hz, duration to 2 seconds\n2. Create the time vector\n3. Build each sine component and add them together with noise\n4. Display the total number of samples, the min voltage (rounded to 1 decimal), and the max voltage (rounded to 1 decimal)\n\nUse rng(10) for reproducibility.",
-      "starter_code": "% Simulate multi-component EEG signal\nrng(10);\n\nfs = 256;           % sampling rate (Hz)\nduration = 2;       % seconds\nt = 0:1/fs:duration-1/fs;\n\n% Create frequency components\n% Alpha (10 Hz, amplitude 20 uV)\n% Beta (22 Hz, amplitude 8 uV)\n% Theta (6 Hz, amplitude 15 uV)\n% YOUR CODE HERE\n\n% Add noise (std = 5 uV)\n% YOUR CODE HERE\n\n% Combine into final EEG signal\n% YOUR CODE HERE\n\n% Display properties\n% YOUR CODE HERE\n",
-      "solution": "rng(10);\n\nfs = 256;\nduration = 2;\nt = 0:1/fs:duration-1/fs;\n\nalpha = 20 * sin(2 * pi * 10 * t);\nbeta = 8 * sin(2 * pi * 22 * t);\ntheta = 15 * sin(2 * pi * 6 * t);\n\nnoise = 5 * randn(1, length(t));\n\neeg_signal = alpha + beta + theta + noise;\n\ndisp(['Total samples: ' num2str(length(eeg_signal))]);\ndisp(['Min voltage: ' num2str(round(min(eeg_signal)*10)/10) ' uV']);\ndisp(['Max voltage: ' num2str(round(max(eeg_signal)*10)/10) ' uV']);",
+      "prompt": "Create a simulated EEG signal that contains three frequency components commonly found in brain recordings:\n- Alpha waves: 10 Hz, amplitude 20 microvolts\n- Beta waves: 22 Hz, amplitude 8 microvolts\n- Theta waves: 6 Hz, amplitude 15 microvolts\n\nPlus random noise with standard deviation of 5 microvolts.\n\nSteps:\n1. Set sampling rate to 256 Hz, duration to 2 seconds\n2. Create the time vector\n3. Build each sine component and add them together with noise\n4. Display the total number of samples, the min voltage (rounded to 1 decimal), and the max voltage (rounded to 1 decimal)\n\nUse rand(\"state\", 10); randn(\"state\", 10) for reproducibility.",
+      "starter_code": "% Simulate multi-component EEG signal\nrand(\"state\", 10); randn(\"state\", 10);\n\nfs = 256;           % sampling rate (Hz)\nduration = 2;       % seconds\nt = 0:1/fs:duration-1/fs;\n\n% Create frequency components\n% Alpha (10 Hz, amplitude 20 uV)\n% Beta (22 Hz, amplitude 8 uV)\n% Theta (6 Hz, amplitude 15 uV)\n% YOUR CODE HERE\n\n% Add noise (std = 5 uV)\n% YOUR CODE HERE\n\n% Combine into final EEG signal\n% YOUR CODE HERE\n\n% Display properties\n% YOUR CODE HERE\n",
+      "solution": "rand(\"state\", 10); randn(\"state\", 10);\n\nfs = 256;\nduration = 2;\nt = 0:1/fs:duration-1/fs;\n\nalpha = 20 * sin(2 * pi * 10 * t);\nbeta = 8 * sin(2 * pi * 22 * t);\ntheta = 15 * sin(2 * pi * 6 * t);\n\nnoise = 5 * randn(1, length(t));\n\neeg_signal = alpha + beta + theta + noise;\n\ndisp(['Total samples: ' num2str(length(eeg_signal))]);\ndisp(['Min voltage: ' num2str(round(min(eeg_signal)*10)/10) ' uV']);\ndisp(['Max voltage: ' num2str(round(max(eeg_signal)*10)/10) ' uV']);",
       "hints": [
         "Each sine component follows the pattern: amplitude * sin(2 * pi * frequency * t). For example, alpha = 20 * sin(2 * pi * 10 * t);",
         "Generate noise with randn: noise = 5 * randn(1, length(t)); Then combine: eeg_signal = alpha + beta + theta + noise;",
@@ -38,7 +38,7 @@
       ],
       "test_cases": [
         {
-          "expected_output": "Total samples: 512\nMin voltage: -45.2 uV\nMax voltage: 42.5 uV\n"
+          "expected_output": "Total samples: 512\nMin voltage: -42.4 uV\nMax voltage: 44.6 uV\n"
         }
       ],
       "requires_plot": false

@@ -100,7 +100,11 @@ export async function submitCode(
   code: string,
   options?: { requiresPlot?: boolean }
 ): Promise<string> {
-  const finalCode = options?.requiresPlot ? wrapCodeForPlot(code) : code
+  // Prepend "1;" so Octave treats the file as a script, allowing local function definitions.
+  // Configure FFTW for single-threaded estimate mode — FFTW's planner hangs in the
+  // isolate sandbox when it tries to measure/thread, so we force single-thread + estimate.
+  const scriptCode = `1;\nfftw('threads', 1);\nfftw('planner', 'estimate');\n${code}`
+  const finalCode = options?.requiresPlot ? wrapCodeForPlot(scriptCode) : scriptCode
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
