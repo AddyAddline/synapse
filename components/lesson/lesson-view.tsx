@@ -34,14 +34,20 @@ export function LessonView({
   lesson,
   exercises,
   userId,
+  previouslyCorrect = [],
 }: {
   lesson: Lesson
   exercises: Exercise[]
   userId: string
+  previouslyCorrect?: number[]
 }) {
   const [chatOpen, setChatOpen] = useState(false)
-  const [completedExercises, setCompletedExercises] = useState<Set<number>>(new Set())
-  const [lessonMarkedComplete, setLessonMarkedComplete] = useState(false)
+  const [completedExercises, setCompletedExercises] = useState<Set<number>>(
+    () => new Set(previouslyCorrect)
+  )
+  const [lessonMarkedComplete, setLessonMarkedComplete] = useState(
+    () => previouslyCorrect.length > 0 && previouslyCorrect.length === exercises.length
+  )
 
   const allExercisesDone = exercises.length > 0 && completedExercises.size === exercises.length
 
@@ -102,6 +108,7 @@ export function LessonView({
                     isLastExercise={i === exercises.length - 1}
                     allExercisesDone={allExercisesDone}
                     onCorrect={handleExerciseCorrect}
+                    initialCorrect={completedExercises.has(ex.id)}
                   />
                 ))}
               </div>

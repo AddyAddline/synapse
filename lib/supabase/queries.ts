@@ -130,6 +130,23 @@ export async function insertAttempt(
   return data
 }
 
+export async function getCorrectExerciseIds(
+  supabase: SupabaseClient,
+  userId: string,
+  exerciseIds: number[]
+) {
+  if (exerciseIds.length === 0) return []
+  const { data, error } = await supabase
+    .from('user_attempts')
+    .select('exercise_id')
+    .eq('user_id', userId)
+    .eq('correct', true)
+    .in('exercise_id', exerciseIds)
+
+  if (error) throw error
+  return Array.from(new Set((data || []).map((d: { exercise_id: number }) => d.exercise_id)))
+}
+
 // ============================================
 // Chat Sessions
 // ============================================

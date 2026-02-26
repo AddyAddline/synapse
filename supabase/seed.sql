@@ -376,7 +376,7 @@ VALUES (3, 1, 'Create a time vector',
   't = 0:0.1:1;
 disp(t)',
   '["The colon operator syntax is start:step:end","For 0 to 1 with step 0.1: t = 0:0.1:1","Then use disp(t) to show the result"]',
-  '[{"expected_output":"   0   0.1000   0.2000   0.3000   0.4000   0.5000   0.6000   0.7000   0.8000   0.9000   1.0000\n"}]',
+  '[{"expected_output":"Columns 1 through 7:\n0.00000    0.10000    0.20000    0.30000    0.40000    0.50000    0.60000\nColumns 8 through 11:\n0.70000    0.80000    0.90000    1.00000\n"}]',
   false);
 
 INSERT INTO exercises (lesson_id, order_num, title, prompt, starter_code, solution, hints, test_cases, requires_plot)
@@ -436,7 +436,7 @@ disp(eeg(2, :))
 disp(eeg(3, 4))
 disp(eeg(:, 1))',
   '["Use (row, column) to index a matrix. The colon : means ''all''.","Entire row 2: eeg(2, :) — row 2, all columns","Single value: eeg(3, 4) — row 3, column 4. All of column 1: eeg(:, 1)"]',
-  '[{"expected_output":"   0.8000   2.9000   1.7000   4.2000\n6.1000\n   1.2000\n   0.8000\n   1.5000\n"}]',
+  '[{"expected_output":"0.80000   2.90000   1.70000   4.20000\n6.1000\n1.20000\n0.80000\n1.50000\n"}]',
   false);
 
 
@@ -1235,7 +1235,7 @@ disp(mean(rt))
 acc = trial_data(:, 2);
 disp(mean(acc))',
   '["Use size(matrix, 1) to get just the number of rows (first dimension)","Extract a column using the colon operator: rt = trial_data(:, 1) means all rows, column 1","mean() calculates the average. For accuracy, mean of [1 0 1 1 0 1] gives the proportion correct"]',
-  '[{"expected_output":"6\n265\n0.6667\n"}]',
+  '[{"expected_output":"6\n265\n0.66667\n"}]',
   false);
 
 INSERT INTO exercises (lesson_id, order_num, title, prompt, starter_code, solution, hints, test_cases, requires_plot)
@@ -4634,7 +4634,7 @@ firing_rate = spike_count / duration;
 disp([''Number of spikes: '' num2str(spike_count)]);
 disp([''Firing rate: '' num2str(firing_rate) '' Hz'']);',
   '["The Euler update: dV = (-(V(i-1) - V_rest) + R * I_input) / tau; V(i) = V(i-1) + dV * dt;","Spike check: if V(i) >= V_thresh, then V(i) = V_rest; spike_count = spike_count + 1; end","Firing rate = spike_count / duration. Display with disp([''Number of spikes: '' num2str(spike_count)]);"]',
-  '[{"expected_output":"Number of spikes: 56\nFiring rate: 56 Hz\n"}]',
+  '[{"expected_output":"Number of spikes: 72\nFiring rate: 72 Hz\n"}]',
   false);
 
 INSERT INTO exercises (lesson_id, order_num, title, prompt, starter_code, solution, hints, test_cases, requires_plot)
@@ -4714,7 +4714,7 @@ for idx = 1:length(I_values)
   disp([''I = '' num2str(I_values(idx), ''%.1f'') '' nA -> '' num2str(firing_rates(idx)) '' Hz'']);
 end',
   '["The inner simulation loop is identical to Exercise 1. Just wrap it in an outer loop over I_values: for idx = 1:length(I_values) ... I_input = I_values(idx); ... end","For each current value, reset V and spike_count before simulating. V = ones(1, num_steps) * V_rest; spike_count = 0; Then run the Euler loop.","Display: for idx = 1:length(I_values)  disp([''I = '' num2str(I_values(idx), ''%.1f'') '' nA -> '' num2str(firing_rates(idx)) '' Hz'']); end"]',
-  '[{"expected_output":"I = 0.5 nA -> 0 Hz\nI = 1.0 nA -> 0 Hz\nI = 1.2 nA -> 0 Hz\nI = 1.5 nA -> 0 Hz\nI = 1.8 nA -> 33 Hz\nI = 2.0 nA -> 56 Hz\nI = 2.5 nA -> 95 Hz\nI = 3.0 nA -> 126 Hz\nI = 4.0 nA -> 178 Hz\n"}]',
+  '[{"expected_output":"I = 0.5 nA -> 0 Hz\nI = 1.0 nA -> 0 Hz\nI = 1.2 nA -> 0 Hz\nI = 1.5 nA -> 0 Hz\nI = 1.8 nA -> 55 Hz\nI = 2.0 nA -> 72 Hz\nI = 2.5 nA -> 108 Hz\nI = 3.0 nA -> 144 Hz\nI = 4.0 nA -> 212 Hz\n"}]',
   false);
 
 INSERT INTO exercises (lesson_id, order_num, title, prompt, starter_code, solution, hints, test_cases, requires_plot)

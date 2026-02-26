@@ -20,7 +20,7 @@
       ],
       "test_cases": [
         {
-          "expected_output": "Number of spikes: 56\nFiring rate: 56 Hz\n"
+          "expected_output": "Number of spikes: 72\nFiring rate: 72 Hz\n"
         }
       ],
       "requires_plot": false
@@ -38,7 +38,7 @@
       ],
       "test_cases": [
         {
-          "expected_output": "I = 0.5 nA -> 0 Hz\nI = 1.0 nA -> 0 Hz\nI = 1.2 nA -> 0 Hz\nI = 1.5 nA -> 0 Hz\nI = 1.8 nA -> 33 Hz\nI = 2.0 nA -> 56 Hz\nI = 2.5 nA -> 95 Hz\nI = 3.0 nA -> 126 Hz\nI = 4.0 nA -> 178 Hz\n"
+          "expected_output": "I = 0.5 nA -> 0 Hz\nI = 1.0 nA -> 0 Hz\nI = 1.2 nA -> 0 Hz\nI = 1.5 nA -> 0 Hz\nI = 1.8 nA -> 55 Hz\nI = 2.0 nA -> 72 Hz\nI = 2.5 nA -> 108 Hz\nI = 3.0 nA -> 144 Hz\nI = 4.0 nA -> 212 Hz\n"
         }
       ],
       "requires_plot": false

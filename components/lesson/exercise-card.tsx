@@ -25,6 +25,7 @@ export function ExerciseCard({
   isLastExercise,
   allExercisesDone,
   onCorrect,
+  initialCorrect = false,
 }: {
   exercise: Exercise
   lessonId: number
@@ -32,6 +33,7 @@ export function ExerciseCard({
   isLastExercise: boolean
   allExercisesDone: boolean
   onCorrect?: (exerciseId: number) => void
+  initialCorrect?: boolean
 }) {
   const [code, setCode] = useState(exercise.starter_code)
   const [output, setOutput] = useState<{
@@ -42,7 +44,7 @@ export function ExerciseCard({
     plotImage?: string | null
   } | null>(null)
   const [isRunning, setIsRunning] = useState(false)
-  const [isCorrect, setIsCorrect] = useState<boolean | null>(null)
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(initialCorrect ? true : null)
   const [hintLevel, setHintLevel] = useState(-1)
   const [currentHint, setCurrentHint] = useState<string | null>(null)
 

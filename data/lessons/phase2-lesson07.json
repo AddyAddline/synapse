@@ -38,7 +38,7 @@
       ],
       "test_cases": [
         {
-          "expected_output": "6\n265\n0.6667\n"
+          "expected_output": "6\n265\n0.66667\n"
         }
       ],
       "requires_plot": false

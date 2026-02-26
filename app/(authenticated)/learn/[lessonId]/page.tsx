@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { getLesson, getLessonExercises } from '@/lib/supabase/queries'
+import { getLesson, getLessonExercises, getCorrectExerciseIds } from '@/lib/supabase/queries'
 import { redirect } from 'next/navigation'
 import { LessonView } from '@/components/lesson/lesson-view'
 
@@ -20,10 +20,16 @@ export default async function LessonPage({
 
   let lesson = null
   let exercises: Awaited<ReturnType<typeof getLessonExercises>> = []
+  let previouslyCorrect: number[] = []
 
   try {
     lesson = await getLesson(supabase, lessonId)
     exercises = await getLessonExercises(supabase, lessonId)
+    previouslyCorrect = await getCorrectExerciseIds(
+      supabase,
+      user.id,
+      exercises.map((e) => e.id)
+    )
   } catch {
     redirect('/learn')
   }
@@ -35,6 +41,7 @@ export default async function LessonPage({
       lesson={lesson}
       exercises={exercises}
       userId={user.id}
+      previouslyCorrect={previouslyCorrect}
     />
   )
 }
