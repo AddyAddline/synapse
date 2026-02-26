@@ -67,6 +67,7 @@ export function ExerciseCard({
           code,
           exerciseId: exercise.id,
           requiresPlot: exercise.requires_plot,
+          expectedOutput: exercise.test_cases[0]?.expected_output || undefined,
         }),
       })
 
