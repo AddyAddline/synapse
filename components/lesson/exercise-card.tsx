@@ -90,9 +90,11 @@ export function ExerciseCard({
 
         // Check correctness against test cases
         if (exercise.test_cases.length > 0 && data.stdout) {
-          const expected = exercise.test_cases[0].expected_output
-          const actual = data.stdout
-          setIsCorrect(actual.trim() === expected.trim())
+          const normalize = (s: string) =>
+            s.split('\n').map(line => line.trim()).filter(Boolean).join('\n')
+          const expected = normalize(exercise.test_cases[0].expected_output)
+          const actual = normalize(data.stdout)
+          setIsCorrect(actual === expected)
         } else if (exercise.requires_plot) {
           // Plot exercise: correct ONLY if it ran AND produced a plot
           setIsCorrect(data.status?.id === 3 && !!data.plotImage)
